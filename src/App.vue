@@ -1,28 +1,25 @@
-<template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+<template >
+  <div id="app"> 
+    <!-- <Center></Center> -->
+    <!-- <OrderList></OrderList> -->
+    <OrderList2></OrderList2>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+// import Center from './components/Center.vue'
+// import OrderList from './components/OrderList.vue'
+import OrderList2 from './components/OrderList2.vue'
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    // Center,
+    // OrderList,
+    OrderList2
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
