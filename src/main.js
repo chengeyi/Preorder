@@ -5,12 +5,14 @@ import App from './App.vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/zh-TW'
+import CollapseTransition from 'element-ui/lib/transitions/collapse-transition';
 
 //引入Vuex
 import store from './store/index'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI, { locale });
+Vue.component(CollapseTransition.name, CollapseTransition)
 
 new Vue({
   render: h => h(App),

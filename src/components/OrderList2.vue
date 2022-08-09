@@ -6,43 +6,61 @@
       <el-breadcrumb-item>訂單管理</el-breadcrumb-item>
       <el-breadcrumb-item>訂單列表</el-breadcrumb-item>
     </el-breadcrumb>
-
     <el-card>
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input placeholder="請输入内容" clearable v-model="search">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input placeholder="請输入内容" v-model="searchText">
+            <!-- <el-button slot="append" icon="el-icon-search"></el-button> -->
           </el-input>
+        </el-col>
+        <el-col :span="10">
+          <el-date-picker
+            v-model="searchTime"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="開始日期"
+            end-placeholder="結束日期">
+          </el-date-picker>
+        </el-col>
+        <el-col :span="6">
+          <el-button @click="filterData" icon="el-icon-search" type="primary" plain>搜尋</el-button>
+          <el-button @click="filterReset" plain>清除篩選</el-button>
         </el-col>
       </el-row>
 
       <!-- <div class="block">
         <span class="demonstration">有默认值</span>
         <el-color-picker v-model="color1"></el-color-picker>
-    </div> -->
+      </div> -->
       <!-- <el-skeleton :rows="6" animated /> -->
       <!-- 訂單列表數據 -->
       <el-table :data="newTableData" style="width: 100%">
         <el-table-column type="expand">
           <template slot-scope="props">
-            <el-descriptions title="訂單明細">
-            <el-descriptions-item label="訂單編號">{{ props.row.orderNumber }}</el-descriptions-item
-            >
-            <el-descriptions-item label="訂單交易狀態">
-                <el-tag
-                    :type="props.row.txnStatus === '交易成功' ? 'success' : 'success'"
-                    disable-transitions>{{props.row.txnStatus}}
+            <el-descriptions title="訂單明細" class="mb-3 ml-5 mr-5">
+              <el-descriptions-item label="訂單編號">
+                {{ props.row.orderNumber }}
+              </el-descriptions-item>
+              <el-descriptions-item label="訂單交易狀態">
+                <el-tag size="small"
+                        :type="props.row.txnStatus === '交易成功' ? 'success' : 'success'"
+                        disable-transitions>{{props.row.txnStatus}}
                 </el-tag>
-            </el-descriptions-item>
-            <el-descriptions-item label="付款方式">{{ props.row.payType }}</el-descriptions-item>
-            <el-descriptions-item label="建立日期時間">
-                <el-tag size="small">{{ props.row.crtDateTime }}</el-tag>
-            </el-descriptions-item>
-            <el-descriptions-item label="訂單金額">{{ props.row.txnDateTime }}</el-descriptions-item>
+              </el-descriptions-item>
+              <el-descriptions-item label="付款方式">
+                {{ props.row.payType }}
+              </el-descriptions-item>
+              <el-descriptions-item label="建立日期時間">
+                {{ props.row.crtDateTime }}
+              </el-descriptions-item>
+              <el-descriptions-item label="訂單金額">
+                {{ props.row.txnAmt }}
+              </el-descriptions-item>
             </el-descriptions>
           </template>
         </el-table-column>
-        <el-table-column sortable label="訂單編號" prop="orderNumber"> </el-table-column>
+
+        <el-table-column sortable label="訂單編號" prop="orderNumber"></el-table-column>
         <el-table-column sortable label="訂單交易狀態" prop="txnStatus">
             <template slot-scope="scope">
                 <el-tag
@@ -51,7 +69,7 @@
                 </el-tag>
             </template>
         </el-table-column>
-        <el-table-column sortable label="付款方式" prop="payType"> </el-table-column>
+        <el-table-column label="付款方式" prop="payType"> </el-table-column>
         <el-table-column sortable label="建立日期時間" prop="crtDateTime"> </el-table-column>
         <el-table-column sortable label="交易日期時間" prop="txnDateTime"> </el-table-column>
         <el-table-column sortable label="訂單金額" prop="txnAmt"> </el-table-column>
@@ -63,8 +81,6 @@
       </el-table>
       <!-- 分頁 -->
       <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
         :page-sizes="[5, 10, 15, 20]"
         :page-size="queryInfo.pagesize"
@@ -90,14 +106,18 @@
   margin-bottom: 0;
   width: 50%;
 }
+
+
 </style>
 
 <script>
 export default {
   data() {
     return {
-      search: '',
-      newTableData:[
+      searchText: '',
+      searchTime: '',
+      newTableData:[],
+      data:[
           {
             txnDir:'Response 銀行端填入',
             storeId:'兆豐銀行所核發之收款方編號',
@@ -110,7 +130,7 @@ export default {
             txnStatus:'交易成功',
             payType:'信用卡',
             crtDateTime:'2022/07/30',
-            txnDateTime:'2022/07/30',
+            txnDateTime:'2022/08/05',
             txnAmt:'8,888',
           },
           {
@@ -124,53 +144,10 @@ export default {
             txnSeqno:'2022020201233',
             txnStatus:'交易成功',
             payType:'信用卡',
-            crtDateTime:'2022/07/30',
-            txnDateTime:'2022/07/30',
+            crtDateTime:'2022/07/20',
+            txnDateTime:'2022/07/31',
             txnAmt:'8,888',
           },
-      ],  
-      tableData: [
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          category: "江浙小吃、小吃零食",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-          percentage: 10,
-          customColor: "#409eff",
-        },
-        {
-          id: "12987123",
-          name: "好滋好味鸡蛋仔",
-          category: "江浙小吃、小吃零食",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-          percentage: 20,
-        },
-        {
-          id: "12987125",
-          name: "好滋好味鸡蛋仔",
-          category: "江浙小吃、小吃零食",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-          percentage: 30,
-        },
-        {
-          id: "12987126",
-          name: "好滋好味鸡蛋仔",
-          category: "江浙小吃、小吃零食",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-          percentage: 40,
-        },
       ],
       //   customColor: '#409eff',
       // cityData,
@@ -204,8 +181,26 @@ export default {
       progressInfo: [],
     };
   },
+  created(){
+    this.filterReset();
+  },
   methods:{
-    
+    filterData(){
+      let filterResult = JSON.parse(JSON.stringify(this.data));
+      if(this.searchTime){
+        let startTime = this.searchTime[0]
+        let endTime = this.searchTime[1]
+        filterResult = filterResult.filter(item => {
+          return startTime <= new Date(item.crtDateTime) && new Date(item.txnDateTime) <= endTime
+        })
+      }
+      this.newTableData = filterResult;
+    },
+    filterReset(){
+      this.newTableData = JSON.parse(JSON.stringify(this.data));
+      this.searchText = '';
+      this.searchTime = '';
+    },
   }
 };
 </script>
