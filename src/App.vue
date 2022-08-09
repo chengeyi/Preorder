@@ -1,5 +1,5 @@
 <template >
-  <div id="app"> 
+  <div id="app">
     <!-- <Center></Center> -->
     <!-- <OrderList></OrderList> -->
     <OrderList2></OrderList2>

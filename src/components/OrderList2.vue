@@ -10,7 +10,7 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input placeholder="請输入内容" clearable>
+          <el-input placeholder="請输入内容" clearable v-model="search">
             <el-button slot="append" icon="el-icon-search"></el-button>
           </el-input>
         </el-col>
@@ -22,65 +22,39 @@
     </div> -->
       <!-- <el-skeleton :rows="6" animated /> -->
       <!-- 訂單列表數據 -->
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="newTableData" style="width: 100%">
         <el-table-column type="expand">
           <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="商品名称">
-                <span>{{ props.row.name }}</span>
-              </el-form-item>
-              <el-form-item label="所属店铺">
-                <span>{{ props.row.shop }}</span>
-              </el-form-item>
-              <el-form-item label="商品 ID">
-                <span>{{ props.row.id }}</span>
-              </el-form-item>
-              <el-form-item label="店铺 ID">
-                <span>{{ props.row.shopId }}</span>
-              </el-form-item>
-              <el-form-item label="商品分类">
-                <span>{{ props.row.category }}</span>
-              </el-form-item>
-              <el-form-item label="店铺地址">
-                <span>{{ props.row.address }}</span>
-              </el-form-item>
-              <el-form-item label="商品描述">
-                <span>{{ props.row.desc }}</span>
-              </el-form-item>
-              <el-form-item label="商品進度">
-                <div style="width: 250px; height: 30px">
-                  <el-progress
-                    style="margin-top: 10px"
-                    stroke-width="9"
-                    :percentage="props.row.percentage"
-                    :color="props.row.customColor"
-                  ></el-progress>
-                </div>
-              </el-form-item>
-              <el-descriptions title="用户信息">
-                <el-descriptions-item label="商品名稱"
-                  >{{ props.row.name }}</el-descriptions-item
-                >
-                <el-descriptions-item label="手机号"
-                  >18100000000</el-descriptions-item
-                >
-                <el-descriptions-item label="居住地"
-                  >苏州市</el-descriptions-item
-                >
-                <el-descriptions-item label="备注">
-                  <el-tag size="small">学校</el-tag>
-                </el-descriptions-item>
-                <el-descriptions-item label="联系地址"
-                  >江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item
-                >
-              </el-descriptions>
-            </el-form>
+            <el-descriptions title="訂單明細">
+            <el-descriptions-item label="訂單編號">{{ props.row.orderNumber }}</el-descriptions-item
+            >
+            <el-descriptions-item label="訂單交易狀態">
+                <el-tag
+                    :type="props.row.txnStatus === '交易成功' ? 'success' : 'success'"
+                    disable-transitions>{{props.row.txnStatus}}
+                </el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="付款方式">{{ props.row.payType }}</el-descriptions-item>
+            <el-descriptions-item label="建立日期時間">
+                <el-tag size="small">{{ props.row.crtDateTime }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="訂單金額">{{ props.row.txnDateTime }}</el-descriptions-item>
+            </el-descriptions>
           </template>
         </el-table-column>
-        <el-table-column sortable label="商品 ID" prop="id"> </el-table-column>
-        <el-table-column sortable label="商品名称" prop="name">
+        <el-table-column sortable label="訂單編號" prop="orderNumber"> </el-table-column>
+        <el-table-column sortable label="訂單交易狀態" prop="txnStatus">
+            <template slot-scope="scope">
+                <el-tag
+                    :type="scope.row.txnStatus === '交易成功' ? 'success' : 'success'"
+                    disable-transitions>{{scope.row.txnStatus}}
+                </el-tag>
+            </template>
         </el-table-column>
-        <el-table-column sortable label="描述" prop="desc"> </el-table-column>
+        <el-table-column sortable label="付款方式" prop="payType"> </el-table-column>
+        <el-table-column sortable label="建立日期時間" prop="crtDateTime"> </el-table-column>
+        <el-table-column sortable label="交易日期時間" prop="txnDateTime"> </el-table-column>
+        <el-table-column sortable label="訂單金額" prop="txnAmt"> </el-table-column>
         <el-table-column sortable label="商品進度">
           <template #default="scope">
             <el-progress :percentage="scope.row.percentage"> </el-progress>
@@ -122,6 +96,39 @@
 export default {
   data() {
     return {
+      search: '',
+      newTableData:[
+          {
+            txnDir:'Response 銀行端填入',
+            storeId:'兆豐銀行所核發之收款方編號',
+            endpointCode:'兆豐銀行所核發之端末代號',
+            terminalId:'POS 機編號或自訂之編碼',
+            orderNumber:'12987122',
+            inqDateTime:'2022/08/08',
+            txnType:'購物',
+            txnSeqno:'2022020201233',
+            txnStatus:'交易成功',
+            payType:'信用卡',
+            crtDateTime:'2022/07/30',
+            txnDateTime:'2022/07/30',
+            txnAmt:'8,888',
+          },
+          {
+            txnDir:'Response 銀行端填入',
+            storeId:'兆豐銀行所核發之收款方編號',
+            endpointCode:'兆豐銀行所核發之端末代號',
+            terminalId:'POS 機編號或自訂之編碼',
+            orderNumber:'12987123',
+            inqDateTime:'2022/08/08',
+            txnType:'購物',
+            txnSeqno:'2022020201233',
+            txnStatus:'交易成功',
+            payType:'信用卡',
+            crtDateTime:'2022/07/30',
+            txnDateTime:'2022/07/30',
+            txnAmt:'8,888',
+          },
+      ],  
       tableData: [
         {
           id: "12987122",
@@ -197,5 +204,8 @@ export default {
       progressInfo: [],
     };
   },
+  methods:{
+    
+  }
 };
 </script>
