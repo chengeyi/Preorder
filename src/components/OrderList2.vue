@@ -7,24 +7,36 @@
       <el-breadcrumb-item>訂單列表</el-breadcrumb-item>
     </el-breadcrumb>
     <el-card>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <el-input placeholder="請输入内容" v-model="searchText">
+      <el-row :gutter="24" :type="flex">
+        <el-col class="mb-3" :xl="7" :lg="8" :md="6" :sm="6" :xs="24">
+          <el-input placeholder="訂單編號查詢" v-model="searchText">
             <!-- <el-button slot="append" icon="el-icon-search"></el-button> -->
           </el-input>
         </el-col>
-        <el-col :span="10">
+        <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
           <el-date-picker
-            v-model="searchTime"
-            type="datetimerange"
-            range-separator="至"
-            start-placeholder="開始日期"
-            end-placeholder="結束日期">
+            class="w-100"
+            v-model="searchTimeStart"
+            type="datetime"
+            placeholder="起始日期時間"
+            default-time="8:00:00">
           </el-date-picker>
         </el-col>
-        <el-col :span="6">
-          <el-button @click="filterData" icon="el-icon-search" type="primary" plain>搜尋</el-button>
-          <el-button @click="filterReset" plain>清除篩選</el-button>
+        <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
+          <el-date-picker
+            class="w-100"
+            v-model="searchTimeEnd"
+            type="datetime"
+            placeholder="結束日期時間"
+            default-time="20:00:00">
+          </el-date-picker>
+        </el-col>
+        <el-col class="text-right mb-3" :xl="3" :lg="6" :md="6" :sm="8">
+          <el-button  icon="el-icon-search" type="primary" plain
+          @click="filterData()">
+            搜尋
+          </el-button>
+          <el-button @click="allFilterReset" plain>清除篩選</el-button>
         </el-col>
       </el-row>
 
@@ -115,7 +127,8 @@ export default {
   data() {
     return {
       searchText: '',
-      searchTime: '',
+      searchTimeStart: '',
+      searchTimeEnd: '',
       newTableData:[],
       data:[
           {
@@ -182,24 +195,34 @@ export default {
     };
   },
   created(){
-    this.filterReset();
+    this.allFilterReset();
   },
   methods:{
     filterData(){
       let filterResult = JSON.parse(JSON.stringify(this.data));
-      if(this.searchTime){
-        let startTime = this.searchTime[0]
-        let endTime = this.searchTime[1]
+      // 時間搜尋
+      if(this.searchTimeStart || this.searchTimeEnd){
         filterResult = filterResult.filter(item => {
-          return startTime <= new Date(item.crtDateTime) && new Date(item.txnDateTime) <= endTime
+          return this.searchTimeStart <= new Date(item.crtDateTime) && new Date(item.txnDateTime) <= this.searchTimeEnd
         })
+      }
+
+      // 文字搜尋
+      if(this.searchText){
+        filterResult = filterResult.filter(item => {
+          return item.orderNumber === this.searchText
+        });
       }
       this.newTableData = filterResult;
     },
-    filterReset(){
+    textFilterData(){
+      console.log('here')
+    },
+    allFilterReset(){
       this.newTableData = JSON.parse(JSON.stringify(this.data));
       this.searchText = '';
-      this.searchTime = '';
+      this.searchTimeStart = '';
+      this.searchTimeEnd = '';
     },
   }
 };

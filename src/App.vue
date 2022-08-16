@@ -41,5 +41,9 @@ export default {
   width: 100% !important;
 }
 
+.text-right{
+  text-align: right !important;
+}
+
 
 </style>
