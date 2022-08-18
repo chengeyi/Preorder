@@ -105,23 +105,6 @@
   </div>
 </template>
 
-<style>
-.demo-table-expand {
-  font-size: 0;
-}
-.demo-table-expand label {
-  width: 90px;
-  color: #99a9bf;
-}
-.demo-table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 50%;
-}
-
-
-</style>
-
 <script>
 export default {
   data() {
@@ -151,7 +134,7 @@ export default {
             storeId:'兆豐銀行所核發之收款方編號',
             endpointCode:'兆豐銀行所核發之端末代號',
             terminalId:'POS 機編號或自訂之編碼',
-            orderNumber:'12987123',
+            orderNumber:'12987148',
             inqDateTime:'2022/08/08',
             txnType:'購物',
             txnSeqno:'2022020201233',
@@ -200,6 +183,8 @@ export default {
   methods:{
     filterData(){
       let filterResult = JSON.parse(JSON.stringify(this.data));
+      let regExp = new RegExp(this.searchText);
+
       // 時間搜尋
       if(this.searchTimeStart || this.searchTimeEnd){
         filterResult = filterResult.filter(item => {
@@ -210,7 +195,8 @@ export default {
       // 文字搜尋
       if(this.searchText){
         filterResult = filterResult.filter(item => {
-          return item.orderNumber === this.searchText
+          // return item.orderNumber === this.searchText
+          return regExp.test(item.orderNumber)
         });
       }
       this.newTableData = filterResult;
@@ -227,3 +213,18 @@ export default {
   }
 };
 </script>
+
+<style>
+.demo-table-expand {
+  font-size: 0;
+}
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+.demo-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
+</style>
