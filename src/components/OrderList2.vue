@@ -16,7 +16,7 @@
         <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
           <el-date-picker
             class="w-100"
-            v-model="searchTimeStart"
+            v-model="inqTxnTimeStart"
             type="datetime"
             placeholder="起始日期時間"
             default-time="8:00:00">
@@ -25,7 +25,7 @@
         <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
           <el-date-picker
             class="w-100"
-            v-model="searchTimeEnd"
+            v-model="inqTxnTimeEnd"
             type="datetime"
             placeholder="結束日期時間"
             default-time="20:00:00">
@@ -46,7 +46,7 @@
       </div> -->
       <!-- <el-skeleton :rows="6" animated /> -->
       <!-- 訂單列表數據 -->
-      <el-table :data="newTableData" style="width: 100%">
+      <el-table class="phone-hide" :data="txnList" style="width: 100%">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-descriptions title="訂單明細" class="mb-3 ml-5 mr-5">
@@ -91,17 +91,11 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 分頁 -->
-      <el-pagination
-        :current-page="queryInfo.pagenum"
-        :page-sizes="[5, 10, 15, 20]"
-        :page-size="queryInfo.pagesize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        background
-      >
-      </el-pagination>
     </el-card>
+
+    <div class="web-hide" v-for="item in txnList" :key="item">
+      {{item}}
+    </div>
   </div>
 </template>
 
@@ -110,9 +104,9 @@ export default {
   data() {
     return {
       searchText: '',
-      searchTimeStart: '',
-      searchTimeEnd: '',
-      newTableData:[],
+      inqTxnTimeStart: '',
+      inqTxnTimeEnd: '',
+      txnList:[],
       data:[
           {
             txnDir:'Response 銀行端填入',
@@ -120,7 +114,6 @@ export default {
             endpointCode:'兆豐銀行所核發之端末代號',
             terminalId:'POS 機編號或自訂之編碼',
             orderNumber:'12987122',
-            inqDateTime:'2022/08/08',
             txnType:'購物',
             txnSeqno:'2022020201233',
             txnStatus:'交易成功',
@@ -135,8 +128,7 @@ export default {
             endpointCode:'兆豐銀行所核發之端末代號',
             terminalId:'POS 機編號或自訂之編碼',
             orderNumber:'12987148',
-            inqDateTime:'2022/08/08',
-            txnType:'購物',
+            txnType:'退款',
             txnSeqno:'2022020201233',
             txnStatus:'交易成功',
             payType:'信用卡',
@@ -186,29 +178,28 @@ export default {
       let regExp = new RegExp(this.searchText);
 
       // 時間搜尋
-      if(this.searchTimeStart || this.searchTimeEnd){
+      if(this.inqTxnTimeStart || this.inqTxnTimeEnd){
         filterResult = filterResult.filter(item => {
-          return this.searchTimeStart <= new Date(item.crtDateTime) && new Date(item.txnDateTime) <= this.searchTimeEnd
+          return this.inqTxnTimeStart <= new Date(item.crtDateTime) && new Date(item.txnDateTime) <= this.inqTxnTimeEnd
         })
       }
 
       // 文字搜尋
       if(this.searchText){
         filterResult = filterResult.filter(item => {
-          // return item.orderNumber === this.searchText
           return regExp.test(item.orderNumber)
         });
       }
-      this.newTableData = filterResult;
+      this.txnList = filterResult;
     },
     textFilterData(){
       console.log('here')
     },
     allFilterReset(){
-      this.newTableData = JSON.parse(JSON.stringify(this.data));
+      this.txnList = JSON.parse(JSON.stringify(this.data));
       this.searchText = '';
-      this.searchTimeStart = '';
-      this.searchTimeEnd = '';
+      this.inqTxnTimeStart = '';
+      this.inqTxnTimeEnd = '';
     },
   }
 };
@@ -226,5 +217,17 @@ export default {
   margin-right: 0;
   margin-bottom: 0;
   width: 50%;
+}
+
+@media screen and (max-width:768px) {
+  .phone-hide{
+    display: none;
+  }
+}
+
+@media screen and (min-width:768px) {
+  .web-hide{
+    display: none;
+  }
 }
 </style>
