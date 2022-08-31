@@ -80,7 +80,7 @@
         <div>
           <img class="statusImg" :src="item.txnStatus === '交易成功' ? successImgUrl : item.txnStatus === '交易失敗' ? falseImgUrl : inProcessImgUrl">
         </div>
-        <div> 
+        <div>
           <h4>交易日期時間: {{item.txnDateTime}}</h4>
           <h5>訂單編號: {{item.orderNumber}}</h5>
           <h5>付款方式: {{item.payType}}</h5>
@@ -168,6 +168,9 @@ export default {
         console.log(res.data.responseBody.inQueryVo)
         this.data = res.data.responseBody.inQueryVo
         this.txnList = JSON.parse(JSON.stringify(this.data))
+        this.txnList.forEach(item=>{
+          item.isShow = false;
+        })
       })
     },
     filterData(){
@@ -209,6 +212,7 @@ export default {
     },
     handlerItemBox(item) {
       item.isShow = !item.isShow
+      console.log(item.isShow)
     }
   }
 };
