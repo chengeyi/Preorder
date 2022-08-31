@@ -103,6 +103,7 @@
 export default {
   data() {
     return {
+      isShow:false,
       flex:'',
       successImgUrl: require('../assets/images/交易成功.jpg'),
       falseImgUrl: require('../assets/images/交易失敗.jpg'),
@@ -168,9 +169,12 @@ export default {
         console.log(res.data.responseBody.inQueryVo)
         this.data = res.data.responseBody.inQueryVo
         this.txnList = JSON.parse(JSON.stringify(this.data))
+        console.log(this.txnList)
         this.txnList.forEach(item=>{
-          item.isShow = false;
+          //item.isShow = false;
+          this.$set( item, this.isShow, true )
         })
+        console.log(this.txnList)
       })
     },
     filterData(){
