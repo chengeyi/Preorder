@@ -11,29 +11,20 @@
         <el-col class="mb-3" :xl="7" :lg="8" :md="6" :sm="6" :xs="24">
           <el-input placeholder="訂單編號查詢" v-model="searchText">
             <!-- <el-button slot="append" icon="el-icon-search"></el-button> -->
-          </el-input>
+          </el-input> 
         </el-col>
         <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
-          <el-date-picker
-            class="w-100"
-            v-model="inqTxnTimeStart"
-            type="datetime"
-            placeholder="起始日期時間"
+          <el-date-picker class="w-100" v-model="inqTxnTimeStart" type="datetime" placeholder="起始日期時間"
             default-time="8:00:00">
           </el-date-picker>
         </el-col>
         <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
-          <el-date-picker
-            class="w-100"
-            v-model="inqTxnTimeEnd"
-            type="datetime"
-            placeholder="結束日期時間"
+          <el-date-picker class="w-100" v-model="inqTxnTimeEnd" type="datetime" placeholder="結束日期時間"
             default-time="20:00:00">
           </el-date-picker>
         </el-col>
         <el-col class="text-right mb-3" :xl="3" :lg="6" :md="6" :sm="8">
-          <el-button  icon="el-icon-search" type="primary" plain
-          @click="filterData()">
+          <el-button icon="el-icon-search" type="primary" plain @click="filterData()">
             搜尋
           </el-button>
           <el-button @click="allFilterReset" plain>清除篩選</el-button>
@@ -41,7 +32,7 @@
       </el-row>
 
       <!-- 訂單列表數據 -->
-      <el-table class="phone-hide" :data="txnList" style="width: 100%">
+      <el-table class="phone-hide" :data="txnList" style="width: 100%" :row-class-name="tableRowClassName">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-descriptions title="訂單明細" class="mb-3 ml-5 mr-5">
@@ -49,9 +40,8 @@
                 {{ props.row.orderNumber }}
               </el-descriptions-item>
               <el-descriptions-item label="訂單交易狀態">
-                <el-tag size="small"
-                        :type="props.row.txnStatus === '交易成功' ? 'success' : 'success'"
-                        disable-transitions>{{props.row.txnStatus}}
+                <el-tag size="small" :type="props.row.txnStatus === '交易成功' ? 'success' : props.row.txnStatus === '交易失敗' ? 'danger' : 'primary'" disable-transitions>
+                  {{ props.row.txnStatus }}
                 </el-tag>
               </el-descriptions-item>
               <el-descriptions-item label="付款方式">
@@ -69,12 +59,11 @@
 
         <el-table-column sortable label="訂單編號" prop="orderNumber"></el-table-column>
         <el-table-column sortable label="訂單交易狀態" prop="txnStatus">
-            <template slot-scope="scope">
-                <el-tag
-                    :type="scope.row.txnStatus === '交易成功' ? 'success' : 'success'"
-                    disable-transitions>{{scope.row.txnStatus}}
-                </el-tag>
-            </template>
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.txnStatus === '交易成功' ? 'success' : scope.row.txnStatus === '交易失敗' ? 'danger' : 'primary'" disable-transitions>
+              {{ scope.row.txnStatus }}
+            </el-tag>
+          </template>
         </el-table-column>
         <el-table-column label="付款方式" prop="payType"> </el-table-column>
         <el-table-column sortable label="建立日期時間" prop="crtDate"> </el-table-column>
@@ -82,7 +71,31 @@
         <el-table-column sortable label="訂單金額" prop="txnAmt"> </el-table-column>
       </el-table>
     </el-card>
-    {{data}}
+
+    <div  v-for="item in txnList" :key="item.orderNumber" class="listContainer web-hide">
+      <div 
+      class="itemContainer" :class="item.txnStatus === '交易成功' ? 'success' : item.txnStatus == '交易失敗' ? 'danger' : 'inProcess'"
+      @click="handlerItemBox(item)"
+      >
+        <div>
+          <img class="statusImg" :src="item.txnStatus === '交易成功' ? successImgUrl : item.txnStatus === '交易失敗' ? falseImgUrl : inProcessImgUrl">
+        </div>
+        <div> 
+          <h4>交易日期時間: {{item.txnDateTime}}</h4>
+          <h5>訂單編號: {{item.orderNumber}}</h5>
+          <h5>付款方式: {{item.payType}}</h5>
+          <h5>訂單交易狀態: {{item.txnStatus}}</h5>
+          <span v-if="item.isShow">
+            <h5>付款方式: {{item.payType}}</h5>
+            <h5>付款人帳號/卡號: XXXX</h5>
+            <h5>訂單金額: {{item.txnAmt}}</h5>
+            <h5>交易幣別碼: XXXX</h5>
+            <h5>載具: XXXX</h5>
+            <h5>執行結果說明: XXXX</h5>
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -90,6 +103,10 @@
 export default {
   data() {
     return {
+      flex:'',
+      successImgUrl: require('../assets/images/交易成功.jpg'),
+      falseImgUrl: require('../assets/images/交易失敗.jpg'),
+      inProcessImgUrl: require('../assets/images/交易進行中.jpg'),
       searchText: '',
       inqTxnTimeStart: '',
       inqTxnTimeEnd: '',
@@ -127,7 +144,7 @@ export default {
       progressInfo: [],
     };
   },
-  created(){
+  created() {
     this.allFilterReset();
     this.getData()
   },
@@ -158,29 +175,41 @@ export default {
       let regExp = new RegExp(this.searchText);
 
       // 時間搜尋
-      if(this.inqTxnTimeStart || this.inqTxnTimeEnd){
+      if (this.inqTxnTimeStart || this.inqTxnTimeEnd) {
         filterResult = filterResult.filter(item => {
           return this.inqTxnTimeStart <= new Date(item.crtDateTime) && new Date(item.txnDateTime) <= this.inqTxnTimeEnd
         })
       }
 
       // 文字搜尋
-      if(this.searchText){
+      if (this.searchText) {
         filterResult = filterResult.filter(item => {
           return regExp.test(item.orderNumber)
         });
       }
       this.txnList = filterResult;
     },
-    allFilterReset(){
+    textFilterData() {
+      console.log('here')
+    },
+    allFilterReset() {
       this.txnList = JSON.parse(JSON.stringify(this.data));
       this.searchText = '';
       this.inqTxnTimeStart = '';
       this.inqTxnTimeEnd = '';
     },
-  },
-  computed:{
-    
+    tableRowClassName({ row }) {
+      console.log(row)
+      if (row.txnStatus === '交易失敗') {
+        return 'warning-row';
+      } else if (row.txnStatus === '交易成功') {
+        return 'success-row';
+      }
+      return '';
+    },
+    handlerItemBox(item) {
+      item.isShow = !item.isShow
+    }
   }
 };
 </script>
@@ -189,10 +218,12 @@ export default {
 .demo-table-expand {
   font-size: 0;
 }
+
 .demo-table-expand label {
   width: 90px;
   color: #99a9bf;
 }
+
 .demo-table-expand .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
@@ -200,14 +231,56 @@ export default {
 }
 
 @media screen and (max-width:768px) {
-  .phone-hide{
+  .phone-hide {
     display: none;
   }
 }
 
 @media screen and (min-width:768px) {
-  .web-hide{
+  .web-hide {
     display: none;
   }
+}
+
+.el-table .warning-row {
+  background: oldlace;
+}
+
+.el-table .success-row {
+  background: #f0f9eb;
+}
+
+.test {
+  border: 1px solid red;
+  height: 180px;
+}
+
+.success {
+  background-color: #95f59f;
+  border-radius: 5px;
+  border: 5px solid #61F17B;
+}
+
+.danger {
+  background-color: #FFAFAF;
+  border-radius: 5px;
+  border: 5px solid #f17d7d;
+}
+
+.inProcess {
+  background-color: #B8FFFF;
+  border-radius: 5px;
+  border: 5px solid #79ECF6;
+}
+
+.statusImg {
+  border-radius: 10px;
+}
+
+.itemContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 20px;
 }
 </style>
