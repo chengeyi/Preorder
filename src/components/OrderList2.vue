@@ -7,7 +7,7 @@
       <el-breadcrumb-item>訂單列表</el-breadcrumb-item>
     </el-breadcrumb>
     <el-card>
-      <el-row :gutter="24" :type="flex">
+      <el-row :gutter="24">
         <el-col class="mb-3" :xl="7" :lg="8" :md="6" :sm="6" :xs="24">
           <el-input placeholder="訂單編號查詢" v-model="searchText">
             <!-- <el-button slot="append" icon="el-icon-search"></el-button> -->
@@ -202,12 +202,29 @@ export default {
   },
   created() {
     this.allFilterReset();
+    this.getData()
   },
-  computed: {
-    
-  },
-  methods: {
-    filterData() {
+  methods:{
+    getData(){
+      let api = 'http://192.168.10.112/servlet/twpay/V1/controller/QueryServlet'
+      let data = {
+        txnDateStart: this.inqTxnTimeStart || "20220801",
+        txnDateEnd: this.inqTxnTimeEnd || "20220829"
+      }
+      let sendData = "requestHeader={}&requestBody=" + JSON.stringify(data);
+
+      this.axios(api,{
+        method: 'POST',
+        headers: {
+          "Content-type": "application/x-www-form-urlencoded;charset=UTF-8",
+        },
+        data: sendData,
+      })
+      .then((res) => {
+        console.log(res.data.responseBody.inQueryVo)
+      })
+    },
+    filterData(){
       let filterResult = JSON.parse(JSON.stringify(this.data));
       let regExp = new RegExp(this.searchText);
 
