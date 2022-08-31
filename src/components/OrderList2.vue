@@ -45,7 +45,7 @@
                 {{ props.row.orderNumber }}
               </el-descriptions-item>
               <el-descriptions-item label="訂單交易狀態">
-                <el-tag size="small" :type="props.row.txnStatus === '交易成功' ? 'success' : 'danger'" disable-transitions>
+                <el-tag size="small" :type="props.row.txnStatus === '交易成功' ? 'success' : props.row.txnStatus === '交易失敗' ? 'danger' : 'primary'" disable-transitions>
                   {{ props.row.txnStatus }}
                 </el-tag>
               </el-descriptions-item>
@@ -65,7 +65,7 @@
         <el-table-column sortable label="訂單編號" prop="orderNumber"></el-table-column>
         <el-table-column sortable label="訂單交易狀態" prop="txnStatus">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.txnStatus === '交易成功' ? 'success' : 'danger'" disable-transitions>
+            <el-tag :type="scope.row.txnStatus === '交易成功' ? 'success' : scope.row.txnStatus === '交易失敗' ? 'danger' : 'primary'" disable-transitions>
               {{ scope.row.txnStatus }}
             </el-tag>
           </template>
