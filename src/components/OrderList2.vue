@@ -32,7 +32,7 @@
       </el-row>
 
       <!-- 訂單列表數據 -->
-      <el-table class="phone-hide" :data="txnList" style="width: 100%" :row-class-name="tableRowClassName">
+      <el-table class="phone-hide" :data="data" style="width: 100%" :row-class-name="tableRowClassName">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-descriptions title="訂單明細" class="mb-3 ml-5 mr-5">
@@ -72,8 +72,8 @@
       </el-table>
     </el-card>
 
-    <div  v-for="item in txnList" :key="item.orderNumber" class="listContainer web-hide">
-      <div 
+    <div  v-for="item in data" :key="item.orderNumber" class="listContainer web-hide">
+      <div
       class="itemContainer" :class="item.txnStatus === '交易成功' ? 'success' : item.txnStatus == '交易失敗' ? 'danger' : 'inProcess'"
       @click="handlerItemBox(item)"
       >
@@ -85,6 +85,7 @@
           <h5>訂單編號: {{item.orderNumber}}</h5>
           <h5>付款方式: {{item.payType}}</h5>
           <h5>訂單交易狀態: {{item.txnStatus}}</h5>
+          {{item.isShow}}
           <span v-if="item.isShow">
             <h5>付款方式: {{item.payType}}</h5>
             <h5>付款人帳號/卡號: XXXX</h5>
@@ -110,7 +111,6 @@ export default {
       searchText: '',
       inqTxnTimeStart: '',
       inqTxnTimeEnd: '',
-      txnList:[],
       data:[],
       //   customColor: '#409eff',
       // cityData,
@@ -165,11 +165,9 @@ export default {
         data: sendData,
       })
       .then((res) => {
-        console.log(res.data.responseBody.inQueryVo)
-        this.data = res.data.responseBody.inQueryVo
-        this.txnList = JSON.parse(JSON.stringify(this.data))
-        this.txnList.forEach(item=>{
-          item.isShow = false;
+        this.data = JSON.parse(JSON.stringify(res.data.responseBody.inQueryVo))
+        this.data.forEach(item=>{
+          this.$set(item,"isShow", false)
         })
       })
     },
@@ -190,13 +188,13 @@ export default {
           return regExp.test(item.orderNumber)
         });
       }
-      this.txnList = filterResult;
+      this.data = filterResult;
     },
     textFilterData() {
       console.log('here')
     },
     allFilterReset() {
-      this.txnList = JSON.parse(JSON.stringify(this.data));
+      this.data = JSON.parse(JSON.stringify(this.data));
       this.searchText = '';
       this.inqTxnTimeStart = '';
       this.inqTxnTimeEnd = '';
@@ -211,8 +209,8 @@ export default {
       return '';
     },
     handlerItemBox(item) {
-      item.isShow = !item.isShow
-      console.log(item.isShow)
+      console.log(item)
+      this.$set(item,"isShow", !item.isShow)
     }
   }
 };
