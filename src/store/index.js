@@ -4,7 +4,8 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
-  state: {
+state: {
+    examination: true,
     orderList:[
         {
             order_number:'7867473872181848',
@@ -49,9 +50,9 @@ const store = new Vuex.Store({
             create_time:'2022/08/01'
         }
     ]
-  },
-  actions: {},
-  mutations: {},
-  getters: {}
+},
+actions: {},
+mutations: {},
+getters: {}
 })
 export default store;

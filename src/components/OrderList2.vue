@@ -11,7 +11,7 @@
         <el-col class="mb-3" :xl="7" :lg="8" :md="6" :sm="6" :xs="24">
           <el-input placeholder="訂單編號查詢" v-model="searchText">
             <!-- <el-button slot="append" icon="el-icon-search"></el-button> -->
-          </el-input> 
+          </el-input>
         </el-col>
         <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
           <el-date-picker class="w-100" v-model="inqTxnTimeStart" type="datetime" placeholder="起始日期時間"
@@ -36,22 +36,23 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-descriptions title="訂單明細" class="mb-3 ml-5 mr-5">
-              <el-descriptions-item label="訂單編號">
-                {{ props.row.orderNumber }}
+              <el-descriptions-item label="銀行端交易序號">
+                {{ props.row.txnSeqno }}
               </el-descriptions-item>
-              <el-descriptions-item label="訂單交易狀態">
-                <el-tag size="small" :type="props.row.txnStatus === '交易成功' ? 'success' : props.row.txnStatus === '交易失敗' ? 'danger' : 'primary'" disable-transitions>
-                  {{ props.row.txnStatus }}
-                </el-tag>
+              <el-descriptions-item label="交易類型">
+                {{ props.row.txnType }}
               </el-descriptions-item>
-              <el-descriptions-item label="付款方式">
-                {{ props.row.payType }}
+              <el-descriptions-item label="交易幣別">
+                {{ props.row.txnCurrency }}
               </el-descriptions-item>
-              <el-descriptions-item label="建立日期時間">
-                {{ props.row.crtTime }}
+              <el-descriptions-item label="付款人帳號/卡號">
+                {{ props.row.txnAccNO }}
               </el-descriptions-item>
-              <el-descriptions-item label="訂單金額">
-                {{ props.row.txnAmt }}
+              <el-descriptions-item label="載具顯碼">
+                {{ props.row.carrierId1 }}
+              </el-descriptions-item>
+              <el-descriptions-item label="執行結果說明">
+                {{ props.row.rtnMsg }}
               </el-descriptions-item>
             </el-descriptions>
           </template>
@@ -65,7 +66,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="付款方式" prop="payType"> </el-table-column>
+        <el-table-column label="付款方式" prop="payType"></el-table-column>
         <el-table-column sortable label="建立日期時間" prop="crtDate"> </el-table-column>
         <el-table-column sortable label="交易日期時間" prop="acctDate"> </el-table-column>
         <el-table-column sortable label="訂單金額" prop="txnAmt"> </el-table-column>
@@ -85,7 +86,6 @@
           <h5>訂單編號: {{item.orderNumber}}</h5>
           <h5>付款方式: {{item.payType}}</h5>
           <h5>訂單交易狀態: {{item.txnStatus}}</h5>
-          {{item.isShow}}
           <span v-if="item.isShow">
             <h5>付款方式: {{item.payType}}</h5>
             <h5>付款人帳號/卡號: XXXX</h5>
@@ -101,6 +101,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   data() {
     return {
@@ -111,7 +113,54 @@ export default {
       searchText: '',
       inqTxnTimeStart: '',
       inqTxnTimeEnd: '',
-      data:[],
+      data:[
+        {
+          "txnDir": "RQ",
+          "storeId": "test123",
+          "endpointCode": "test123",
+          "terminalId": "",
+          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+          "txnSeqno": "TXN202208290001",
+          "payType": "C",
+          "acctDate": "20220830",
+          "txnAccNO": "432188******3389",
+          "crtDate": "20220829",
+          "crtTime": "175555",
+          "txnDate": "20220829",
+          "txnTime": "175628",
+          "txnCurrency": "901",
+          "txnAmt": "10000",
+          "carrierType": "",
+          "carrierId1": "",
+          "storeMemo": "max測試",
+          "rtnCode": "0000",
+          "rtnMsg": "交易成功",
+          "sign": ""
+        },
+        {
+          "txnDir": "RQ",
+          "storeId": "test123",
+          "endpointCode": "test123",
+          "terminalId": "",
+          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12a2d",
+          "txnSeqno": "TXN202208290001",
+          "payType": "C",
+          "acctDate": "20220830",
+          "txnAccNO": "432188******3389",
+          "crtDate": "20220829",
+          "crtTime": "175555",
+          "txnDate": "20220829",
+          "txnTime": "175628",
+          "txnCurrency": "901",
+          "txnAmt": "10000",
+          "carrierType": "",
+          "carrierId1": "",
+          "storeMemo": "max測試",
+          "rtnCode": "0000",
+          "rtnMsg": "交易成功",
+          "sign": ""
+        }
+      ],
       //   customColor: '#409eff',
       // cityData,
       // 訂單查詢對象
@@ -144,19 +193,21 @@ export default {
       progressInfo: [],
     };
   },
-  created() {
-    this.allFilterReset();
-    this.getData()
+  computed: {
+    ...mapState(['examination'])
   },
   methods:{
     getData(){
-      let api = 'http://192.168.10.112/servlet/twpay/V1/controller/QueryServlet'
+      let api = 'http://192.168.10.112/servlet/twpay/V1/controller/QueryServlet';
+      if(this.examination){
+        console.log(api)
+        return
+      }
       let data = {
         txnDateStart: this.inqTxnTimeStart || "20220801",
         txnDateEnd: this.inqTxnTimeEnd || "20220829",
       }
       let sendData = "requestHeader={}&requestBody=" + JSON.stringify(data);
-
       this.axios(api,{
         method: 'POST',
         headers: {
@@ -190,9 +241,6 @@ export default {
       }
       this.data = filterResult;
     },
-    textFilterData() {
-      console.log('here')
-    },
     allFilterReset() {
       this.data = JSON.parse(JSON.stringify(this.data));
       this.searchText = '';
@@ -200,7 +248,6 @@ export default {
       this.inqTxnTimeEnd = '';
     },
     tableRowClassName({ row }) {
-      console.log(row)
       if (row.txnStatus === '交易失敗') {
         return 'warning-row';
       } else if (row.txnStatus === '交易成功') {
@@ -212,7 +259,11 @@ export default {
       console.log(item)
       this.$set(item,"isShow", !item.isShow)
     }
-  }
+  },
+  created() {
+    this.allFilterReset();
+    this.getData()
+  },
 };
 </script>
 
