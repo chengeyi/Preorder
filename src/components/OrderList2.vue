@@ -90,7 +90,7 @@
         <div>
           <img class="statusImg" :src="item.txnStatus === '交易成功' ? successImgUrl : item.txnStatus === '交易失敗' ? falseImgUrl : inProcessImgUrl">
         </div>
-        <div>
+        <div> 
           <h4>交易日期時間: {{item.txnDateTime}}</h4>
           <h5>訂單編號: {{item.orderNumber}}</h5>
           <h5>付款方式: {{item.payType}}</h5>
