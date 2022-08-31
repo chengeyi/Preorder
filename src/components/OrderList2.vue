@@ -40,11 +40,6 @@
         </el-col>
       </el-row>
 
-      <!-- <div class="block">
-        <span class="demonstration">有默认值</span>
-        <el-color-picker v-model="color1"></el-color-picker>
-      </div> -->
-      <!-- <el-skeleton :rows="6" animated /> -->
       <!-- 訂單列表數據 -->
       <el-table class="phone-hide" :data="txnList" style="width: 100%">
         <el-table-column type="expand">
@@ -63,7 +58,7 @@
                 {{ props.row.payType }}
               </el-descriptions-item>
               <el-descriptions-item label="建立日期時間">
-                {{ props.row.crtDateTime }}
+                {{ props.row.crtTime }}
               </el-descriptions-item>
               <el-descriptions-item label="訂單金額">
                 {{ props.row.txnAmt }}
@@ -82,20 +77,12 @@
             </template>
         </el-table-column>
         <el-table-column label="付款方式" prop="payType"> </el-table-column>
-        <el-table-column sortable label="建立日期時間" prop="crtDateTime"> </el-table-column>
-        <el-table-column sortable label="交易日期時間" prop="txnDateTime"> </el-table-column>
+        <el-table-column sortable label="建立日期時間" prop="crtDate"> </el-table-column>
+        <el-table-column sortable label="交易日期時間" prop="acctDate"> </el-table-column>
         <el-table-column sortable label="訂單金額" prop="txnAmt"> </el-table-column>
-        <el-table-column sortable label="商品進度">
-          <template #default="scope">
-            <el-progress :percentage="scope.row.percentage"> </el-progress>
-          </template>
-        </el-table-column>
       </el-table>
     </el-card>
-
-    <div class="web-hide" v-for="item in txnList" :key="item">
-      {{item}}
-    </div>
+    {{data}}
   </div>
 </template>
 
@@ -107,36 +94,7 @@ export default {
       inqTxnTimeStart: '',
       inqTxnTimeEnd: '',
       txnList:[],
-      data:[
-          {
-            txnDir:'Response 銀行端填入',
-            storeId:'兆豐銀行所核發之收款方編號',
-            endpointCode:'兆豐銀行所核發之端末代號',
-            terminalId:'POS 機編號或自訂之編碼',
-            orderNumber:'12987122',
-            txnType:'購物',
-            txnSeqno:'2022020201233',
-            txnStatus:'交易成功',
-            payType:'信用卡',
-            crtDateTime:'2022/07/30',
-            txnDateTime:'2022/08/05',
-            txnAmt:'8,888',
-          },
-          {
-            txnDir:'Response 銀行端填入',
-            storeId:'兆豐銀行所核發之收款方編號',
-            endpointCode:'兆豐銀行所核發之端末代號',
-            terminalId:'POS 機編號或自訂之編碼',
-            orderNumber:'12987148',
-            txnType:'退款',
-            txnSeqno:'2022020201233',
-            txnStatus:'交易成功',
-            payType:'信用卡',
-            crtDateTime:'2022/07/20',
-            txnDateTime:'2022/07/31',
-            txnAmt:'8,888',
-          },
-      ],
+      data:[],
       //   customColor: '#409eff',
       // cityData,
       // 訂單查詢對象
@@ -178,7 +136,7 @@ export default {
       let api = 'http://192.168.10.112/servlet/twpay/V1/controller/QueryServlet'
       let data = {
         txnDateStart: this.inqTxnTimeStart || "20220801",
-        txnDateEnd: this.inqTxnTimeEnd || "20220829"
+        txnDateEnd: this.inqTxnTimeEnd || "20220829",
       }
       let sendData = "requestHeader={}&requestBody=" + JSON.stringify(data);
 
@@ -191,6 +149,8 @@ export default {
       })
       .then((res) => {
         console.log(res.data.responseBody.inQueryVo)
+        this.data = res.data.responseBody.inQueryVo
+        this.txnList = JSON.parse(JSON.stringify(this.data))
       })
     },
     filterData(){
@@ -218,6 +178,9 @@ export default {
       this.inqTxnTimeStart = '';
       this.inqTxnTimeEnd = '';
     },
+  },
+  computed:{
+    
   }
 };
 </script>
