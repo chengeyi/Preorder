@@ -39,8 +39,12 @@
               <el-descriptions-item label="銀行端交易序號">
                 {{ props.row.txnSeqno }}
               </el-descriptions-item>
-              <el-descriptions-item label="交易類型">
-                {{ props.row.txnType }}
+              <el-descriptions-item label="訂單交易狀態">
+                <el-tag size="small"
+                  :type="props.row.txnStatus === '交易成功' ? 'success' : props.row.txnStatus === '交易失敗' ? 'danger' : 'primary'"
+                  disable-transitions>
+                  {{ props.row.txnStatus }}
+                </el-tag>
               </el-descriptions-item>
               <el-descriptions-item label="交易幣別">
                 {{ props.row.txnCurrency }}
@@ -61,35 +65,37 @@
         <el-table-column sortable label="訂單編號" prop="orderNumber"></el-table-column>
         <el-table-column sortable label="訂單交易狀態" prop="txnStatus">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.txnStatus === '交易成功' ? 'success' : scope.row.txnStatus === '交易失敗' ? 'danger' : 'primary'" disable-transitions>
+            <el-tag
+              :type="scope.row.txnStatus === '交易成功' ? 'success' : scope.row.txnStatus === '交易失敗' ? 'danger' : 'primary'"
+              disable-transitions>
               {{ scope.row.txnStatus }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="付款方式" prop="payType"></el-table-column>
-        <el-table-column sortable label="建立日期時間" prop="crtDate"> </el-table-column>
+        <el-table-column sortable label="建立日期時間" prop="crtDate"></el-table-column>
         <el-table-column sortable label="交易日期時間" prop="acctDate"> </el-table-column>
         <el-table-column sortable label="訂單金額" prop="txnAmt"> </el-table-column>
       </el-table>
     </el-card>
 
-    <div  v-for="item in data" :key="item.orderNumber" class="listContainer web-hide">
-      <div
-      class="itemContainer" :class="item.txnStatus === '交易成功' ? 'success' : item.txnStatus == '交易失敗' ? 'danger' : 'inProcess'"
-      @click="handlerItemBox(item)"
-      >
+    <div v-for="item in data" :key="item.orderNumber" class="listContainer web-hide">
+      <div class="itemContainer"
+        :class="item.txnStatus === '交易成功' ? 'success' : item.txnStatus == '交易失敗' ? 'danger' : 'inProcess'"
+        @click="handlerItemBox(item)">
         <div>
-          <img class="statusImg" :src="item.txnStatus === '交易成功' ? successImgUrl : item.txnStatus === '交易失敗' ? falseImgUrl : inProcessImgUrl">
+          <img class="statusImg"
+            :src="item.txnStatus === '交易成功' ? successImgUrl : item.txnStatus === '交易失敗' ? falseImgUrl : inProcessImgUrl">
         </div>
         <div>
-          <h4>交易日期時間: {{item.txnDateTime}}</h4>
-          <h5>訂單編號: {{item.orderNumber}}</h5>
-          <h5>付款方式: {{item.payType}}</h5>
-          <h5>訂單交易狀態: {{item.txnStatus}}</h5>
+          <h4>交易日期時間: {{ item.txnDateTime }}</h4>
+          <h5>訂單編號: {{ item.orderNumber }}</h5>
+          <h5>付款方式: {{ item.payType }}</h5>
+          <h5>訂單交易狀態: {{ item.txnStatus }}</h5>
           <span v-if="item.isShow">
-            <h5>付款方式: {{item.payType}}</h5>
+            <h5>付款方式: {{ item.payType }}</h5>
             <h5>付款人帳號/卡號: XXXX</h5>
-            <h5>訂單金額: {{item.txnAmt}}</h5>
+            <h5>訂單金額: {{ item.txnAmt }}</h5>
             <h5>交易幣別碼: XXXX</h5>
             <h5>載具: XXXX</h5>
             <h5>執行結果說明: XXXX</h5>
@@ -106,7 +112,8 @@ import { mapState } from 'vuex';
 export default {
   data() {
     return {
-      flex:'',
+      isShow: false,
+      flex: '',
       successImgUrl: require('../assets/images/交易成功.jpg'),
       falseImgUrl: require('../assets/images/交易失敗.jpg'),
       inProcessImgUrl: require('../assets/images/交易進行中.jpg'),
@@ -198,11 +205,10 @@ export default {
   },
   methods:{
     getData(){
-      let api = 'http://192.168.10.112/servlet/twpay/V1/controller/QueryServlet';
       if(this.examination){
-        console.log(api)
         return
       }
+      let api = 'http://192.168.10.112/servlet/twpay/V1/controller/QueryServlet';
       let data = {
         txnDateStart: this.inqTxnTimeStart || "20220801",
         txnDateEnd: this.inqTxnTimeEnd || "20220829",
@@ -213,16 +219,20 @@ export default {
         headers: {
           "Content-type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
-        data: sendData,
-      })
-      .then((res) => {
+        data: sendData
+      }).then((res)=>{
         this.data = JSON.parse(JSON.stringify(res.data.responseBody.inQueryVo))
         this.data.forEach(item=>{
           this.$set(item,"isShow", false)
         })
       })
+      this.data.forEach((item)=>{
+        item.crtDate = this.$moment(item.crtDate).format('YYYY-MM-DD')
+        item.txnDate = this.$moment(item.txnDate).format('YYYY-MM-DD')
+        item.acctDate = this.$moment(item.acctDate).format('YYYY-MM-DD')
+      })
     },
-    filterData(){
+    filterData() {
       let filterResult = JSON.parse(JSON.stringify(this.data));
       let regExp = new RegExp(this.searchText);
 
@@ -256,8 +266,7 @@ export default {
       return '';
     },
     handlerItemBox(item) {
-      console.log(item)
-      this.$set(item,"isShow", !item.isShow)
+      this.$set(item, "isShow", !item.isShow)
     }
   },
   created() {

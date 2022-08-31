@@ -14,7 +14,10 @@ import CollapseTransition from 'element-ui/lib/transitions/collapse-transition';
 
 //引入Vuex
 import store from './store/index'
+//引入moment
+import Moment from 'moment'
 
+Vue.prototype.$moment = Moment;
 Vue.config.productionTip = false
 Vue.use(ElementUI, { locale });
 Vue.use(VueAxios, axios)
