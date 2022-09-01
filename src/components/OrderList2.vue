@@ -14,14 +14,10 @@
           </el-input>
         </el-col>
         <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
-          <el-date-picker class="w-100" v-model="inqTxnTimeStart" type="datetime" placeholder="起始日期時間"
-            default-time="8:00:00">
-          </el-date-picker>
+          <el-date-picker class="w-100" v-model="inqTxnTimeStart" type="date" placeholder="起始日期時間"></el-date-picker>
         </el-col>
         <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
-          <el-date-picker class="w-100" v-model="inqTxnTimeEnd" type="datetime" placeholder="結束日期時間"
-            default-time="20:00:00">
-          </el-date-picker>
+          <el-date-picker class="w-100" v-model="inqTxnTimeEnd" type="date" placeholder="結束日期時間"></el-date-picker>
         </el-col>
         <el-col class="text-right mb-3" :xl="3" :lg="6" :md="6" :sm="8">
           <el-button icon="el-icon-search" type="primary" plain @click="getData()">
@@ -74,7 +70,7 @@
         </el-table-column>
         <el-table-column label="付款方式" prop="payType"></el-table-column>
         <el-table-column sortable label="建立日期時間" prop="crtDate"></el-table-column>
-        <el-table-column sortable label="交易日期時間" prop="acctDate"> </el-table-column>
+        <el-table-column sortable label="交易日期時間" prop="txnDate"> </el-table-column>
         <el-table-column sortable label="訂單金額" prop="txnAmt"> </el-table-column>
       </el-table>
     </el-card>
