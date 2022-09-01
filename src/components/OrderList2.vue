@@ -39,12 +39,15 @@
               <el-descriptions-item label="銀行端交易序號">
                 {{ props.row.txnSeqno }}
               </el-descriptions-item>
-              <el-descriptions-item label="訂單交易狀態">
+              <!-- <el-descriptions-item label="執行結果說明">
                 <el-tag size="small"
-                  :type="props.row.txnStatus === '交易成功' ? 'success' : props.row.txnStatus === '交易失敗' ? 'danger' : 'primary'"
+                  :type="props.row.rtnMsg === '交易成功' ? 'success' : props.row.rtnMsg === '交易失敗' ? 'danger' : 'primary'"
                   disable-transitions>
-                  {{ props.row.txnStatus }}
+                  {{ props.row.rtnMsg }}
                 </el-tag>
+              </el-descriptions-item> -->
+              <el-descriptions-item label="交易時間">
+                {{ props.row.txnTime }}
               </el-descriptions-item>
               <el-descriptions-item label="交易幣別">
                 {{ props.row.txnCurrency }}
@@ -52,53 +55,54 @@
               <el-descriptions-item label="付款人帳號/卡號">
                 {{ props.row.txnAccNO }}
               </el-descriptions-item>
-              <el-descriptions-item label="載具顯碼">
+              <el-descriptions-item label="載具顯碼 id">
                 {{ props.row.carrierId1 }}
               </el-descriptions-item>
-              <el-descriptions-item label="執行結果說明">
-                {{ props.row.rtnMsg }}
+              <el-descriptions-item label="載具顯碼 id">
+                {{ props.row.carrierId1 }}
               </el-descriptions-item>
             </el-descriptions>
           </template>
         </el-table-column>
 
         <el-table-column sortable label="訂單編號" prop="orderNumber"></el-table-column>
-        <el-table-column sortable label="訂單交易狀態" prop="txnStatus">
+        <el-table-column sortable label="執行結果說明" prop="rtnMsg">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.txnStatus === '交易成功' ? 'success' : scope.row.txnStatus === '交易失敗' ? 'danger' : 'primary'"
+              :type="scope.row.rtnMsg === '交易成功' ? 'success' : scope.row.rtnMsg === '交易失敗' ? 'danger' : 'primary'"
               disable-transitions>
-              {{ scope.row.txnStatus }}
+              {{ scope.row.rtnMsg }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="付款方式" prop="payType"></el-table-column>
-        <el-table-column sortable label="建立日期時間" prop="crtDate"></el-table-column>
-        <el-table-column sortable label="交易日期時間" prop="acctDate"> </el-table-column>
+        <el-table-column sortable label="建立日期" prop="crtDate"></el-table-column>
+        <el-table-column sortable label="交易日期" prop="acctDate"> </el-table-column>
         <el-table-column sortable label="訂單金額" prop="txnAmt"> </el-table-column>
       </el-table>
     </el-card>
 
     <div v-for="item in data" :key="item.orderNumber" class="listContainer web-hide">
       <div class="itemContainer"
-        :class="item.txnStatus === '交易成功' ? 'success' : item.txnStatus == '交易失敗' ? 'danger' : 'inProcess'"
+        :class="item.rtnMsg === '交易成功' ? 'success' : item.rtnMsg == '交易失敗' ? 'danger' : 'inProcess'"
         @click="handlerItemBox(item)">
         <div>
           <img class="statusImg"
-            :src="item.txnStatus === '交易成功' ? successImgUrl : item.txnStatus === '交易失敗' ? falseImgUrl : inProcessImgUrl">
+            :src="item.rtnMsg === '交易成功' ? successImgUrl : item.rtnMsg === '交易失敗' ? falseImgUrl : inProcessImgUrl">
         </div>
         <div>
-          <h4>交易日期時間: {{ item.txnDateTime }}</h4>
+          <h4>交易日期: {{ item.acctDate }}</h4>
           <h5>訂單編號: {{ item.orderNumber }}</h5>
+          <h5>交易類型: {{ item.txnType }}</h5>
           <h5>付款方式: {{ item.payType }}</h5>
-          <h5>訂單交易狀態: {{ item.txnStatus }}</h5>
           <span v-if="item.isShow">
-            <h5>付款方式: {{ item.payType }}</h5>
-            <h5>付款人帳號/卡號: XXXX</h5>
+            <h5>付款人帳號/卡號: {{item.txnAccNO}}</h5>
+            <h5>銀行端交易序號: {{item.txnSeqno}}</h5>
+            <h5>交易時間: {{item.txnTime}}</h5>
             <h5>訂單金額: {{ item.txnAmt }}</h5>
-            <h5>交易幣別碼: XXXX</h5>
-            <h5>載具: XXXX</h5>
-            <h5>執行結果說明: XXXX</h5>
+            <h5>交易幣別碼: {{item.txnCurrency}}</h5>
+            <h5>載具顯碼 id: {{item.carrierId1}}</h5>
+            <h5>執行結果說明: {{item.rtnMsg}}</h5>
           </span>
         </div>
       </div>
@@ -112,7 +116,6 @@ import { mapState } from 'vuex';
 export default {
   data() {
     return {
-      isShow: false,
       flex: '',
       successImgUrl: require('../assets/images/交易成功.jpg'),
       falseImgUrl: require('../assets/images/交易失敗.jpg'),
@@ -121,52 +124,29 @@ export default {
       inqTxnTimeStart: '',
       inqTxnTimeEnd: '',
       data:[
-        // {
-        //   "txnDir": "RQ",
-        //   "storeId": "test123",
-        //   "endpointCode": "test123",
-        //   "terminalId": "",
-        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-        //   "txnSeqno": "TXN202208290001",
-        //   "payType": "C",
-        //   "acctDate": "20220830",
-        //   "txnAccNO": "432188******3389",
-        //   "crtDate": "20220829",
-        //   "crtTime": "175555",
-        //   "txnDate": "20220829",
-        //   "txnTime": "175628",
-        //   "txnCurrency": "901",
-        //   "txnAmt": "10000",
-        //   "carrierType": "",
-        //   "carrierId1": "",
-        //   "storeMemo": "max測試",
-        //   "rtnCode": "0000",
-        //   "rtnMsg": "交易成功",
-        //   "sign": ""
-        // },
-        // {
-        //   "txnDir": "RQ",
-        //   "storeId": "test123",
-        //   "endpointCode": "test123",
-        //   "terminalId": "",
-        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12a2d",
-        //   "txnSeqno": "TXN202208290001",
-        //   "payType": "C",
-        //   "acctDate": "20220830",
-        //   "txnAccNO": "432188******3389",
-        //   "crtDate": "20220829",
-        //   "crtTime": "175555",
-        //   "txnDate": "20220829",
-        //   "txnTime": "175628",
-        //   "txnCurrency": "901",
-        //   "txnAmt": "10000",
-        //   "carrierType": "",
-        //   "carrierId1": "",
-        //   "storeMemo": "max測試",
-        //   "rtnCode": "0000",
-        //   "rtnMsg": "交易成功",
-        //   "sign": ""
-        // }
+        {
+          "txnDir": "RQ",
+          "storeId": "test123",
+          "endpointCode": "test123",
+          "terminalId": "",
+          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+          "txnSeqno": "TXN202208290001",
+          "payType": "C",
+          "acctDate": "20220830",
+          "txnAccNO": "432188******3389",
+          "crtDate": "20220829",
+          "crtTime": "175555",
+          "txnDate": "20220829",
+          "txnTime": "175628",
+          "txnCurrency": "901",
+          "txnAmt": "10000",
+          "carrierType": "",
+          "carrierId1": "",
+          "storeMemo": "max測試",
+          "rtnCode": "0000",
+          "rtnMsg": "交易成功",
+          "sign": ""
+        },
       ],
       // customColor: '#409eff',
       // cityData,
