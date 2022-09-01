@@ -24,7 +24,7 @@
           </el-date-picker>
         </el-col>
         <el-col class="text-right mb-3" :xl="3" :lg="6" :md="6" :sm="8">
-          <el-button icon="el-icon-search" type="primary" plain @click="filterData()">
+          <el-button icon="el-icon-search" type="primary" plain @click="getData()">
             搜尋
           </el-button>
           <el-button @click="allFilterReset" plain>清除篩選</el-button>
@@ -121,54 +121,54 @@ export default {
       inqTxnTimeStart: '',
       inqTxnTimeEnd: '',
       data:[
-        {
-          "txnDir": "RQ",
-          "storeId": "test123",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "10000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易成功",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test123",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12a2d",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "10000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易成功",
-          "sign": ""
-        }
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test123",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "10000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易成功",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test123",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12a2d",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "10000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易成功",
+        //   "sign": ""
+        // }
       ],
-      //   customColor: '#409eff',
+      // customColor: '#409eff',
       // cityData,
       // 訂單查詢對象
       queryInfo: {
@@ -210,11 +210,12 @@ export default {
       }
       let api = 'http://192.168.10.112/servlet/twpay/V1/controller/QueryServlet';
       let data = {
-        txnDateStart: this.inqTxnTimeStart || "20220801",
-        txnDateEnd: this.inqTxnTimeEnd || "20220829",
+        txnDateStart: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeStart).format('YYYYMMDD') : '',
+        txnDateEnd: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeEnd).format('YYYYMMDD') : '',
       }
       let sendData = "requestHeader={}&requestBody=" + JSON.stringify(data);
-      this.axios(api,{
+
+      this.axios( api , {
         method: 'POST',
         headers: {
           "Content-type": "application/x-www-form-urlencoded;charset=UTF-8",
@@ -222,16 +223,18 @@ export default {
         data: sendData
       }).then((res)=>{
         this.data = JSON.parse(JSON.stringify(res.data.responseBody.inQueryVo))
-        this.data.forEach(item=>{
+        this.data.forEach(item => {
           this.$set(item,"isShow", false)
-        })
-      })
+        });
+      });
+
       this.data.forEach((item)=>{
         item.crtDate = this.$moment(item.crtDate).format('YYYY-MM-DD')
         item.txnDate = this.$moment(item.txnDate).format('YYYY-MM-DD')
         item.acctDate = this.$moment(item.acctDate).format('YYYY-MM-DD')
       })
     },
+    // 暫時棄用
     filterData() {
       let filterResult = JSON.parse(JSON.stringify(this.data));
       let regExp = new RegExp(this.searchText);
@@ -252,10 +255,10 @@ export default {
       this.data = filterResult;
     },
     allFilterReset() {
-      this.data = JSON.parse(JSON.stringify(this.data));
       this.searchText = '';
       this.inqTxnTimeStart = '';
       this.inqTxnTimeEnd = '';
+      this.getData()
     },
     tableRowClassName({ row }) {
       if (row.txnStatus === '交易失敗') {
@@ -270,7 +273,6 @@ export default {
     }
   },
   created() {
-    this.allFilterReset();
     this.getData()
   },
 };
@@ -292,7 +294,7 @@ export default {
   width: 50%;
 }
 
-@media screen and (max-width:768px) {
+@media screen and (max-width:767px) {
   .phone-hide {
     display: none;
   }
