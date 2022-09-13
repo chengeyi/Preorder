@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 state: {
-    examination: true,
+    examination: false,
     orderList:[
         {
             order_number:'7867473872181848',
