@@ -7,7 +7,7 @@ txnType;				// Y  M 交易類型
 txnSeqno;				// Y  M 銀行端交易序號 
 txnStatus;				// Y  M 訂單交易狀態   
 payType;				// Y  M 付款方式       
-acctDate;				// N  C 帳務日期       
+acctDate;				// N  C 店家帳務日期       
 txnAccNO;				// Y  M 付款人帳號/卡號
 crtDate;				// Y? M 建立日期       
 crtTime;				// Y? M 建立時間       

@@ -565,32 +565,6 @@ export default {
         })
       });
     },
-    // 暫時棄用
-    filterData() {
-      let filterResult = JSON.parse(JSON.stringify(this.data));
-      let regExp = new RegExp(this.searchText);
-
-      // 時間搜尋
-      if (this.inqTxnTimeStart || this.inqTxnTimeEnd) {
-        filterResult = filterResult.filter(item => {
-          return this.inqTxnTimeStart <= new Date(item.crtDateTime) && new Date(item.txnDateTime) <= this.inqTxnTimeEnd
-        })
-      }
-
-      // 文字搜尋
-      if (this.searchText) {
-        filterResult = filterResult.filter(item => {
-          return regExp.test(item.orderNumber)
-        });
-      }
-      this.data = filterResult;
-    },
-    allFilterReset() {
-      this.searchText = '';
-      this.inqTxnTimeStart = '';
-      this.inqTxnTimeEnd = '';
-      this.getData()
-    },
     tableRowClassName({ row }) {
       if (row.txnStatus === '交易失敗') {
         return 'warning-row';
@@ -614,8 +588,6 @@ export default {
   },
   created() {
     this.getData()
-  },
-  fonSearch() {
   },
 };
 </script>
