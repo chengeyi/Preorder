@@ -558,13 +558,12 @@ export default {
         this.data.forEach(item => {
           this.$set(item, "isShow", false)
         });
+        this.data.forEach((item) => {
+          item.crtDate = this.$moment(item.crtDate).format('YYYY-MM-DD')
+          item.txnDate = this.$moment(item.txnDate).format('YYYY-MM-DD')
+          item.acctDate = this.$moment(item.acctDate).format('YYYY-MM-DD')
+        })
       });
-
-      this.data.forEach((item) => {
-        item.crtDate = this.$moment(item.crtDate).format('YYYY-MM-DD')
-        item.txnDate = this.$moment(item.txnDate).format('YYYY-MM-DD')
-        item.acctDate = this.$moment(item.acctDate).format('YYYY-MM-DD')
-      })
     },
     // 暫時棄用
     filterData() {
