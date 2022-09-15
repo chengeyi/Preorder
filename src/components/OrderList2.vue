@@ -15,21 +15,21 @@
         </div>
       </div> -->
       <el-row :gutter="24" id="searchContainer">
-        <el-col  class="mb-3" :xl="7" :lg="7" :md="6" :sm="6" :xs="16" id="iptContainer">
+        <el-col  class="mb-3" :xl="7" :lg="8" :md="6" :sm="6" :xs="24" id="iptContainer">
           <el-input prefix-icon="el-icon-search" id="orderNumIpt" placeholder="商店代號查詢" v-model="storeId" suffix-icon="el-icon-circle-close">
           </el-input>
           <span class="circle-close" @click="clickCircleClose()"></span>
         </el-col>
-        <el-col  class="mb-3" :xl="7" :lg="5" :md="6" :sm="4" :xs="24">
+        <el-col  class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
           <el-date-picker id="el-date-picker" class="w-100" v-model="inqTxnTimeStart" type="date" placeholder="交易日期（起）">
           </el-date-picker>
         </el-col>
-        <el-col  class="mb-3" :xl="7" :lg="5" :md="6" :sm="4" :xs="24">
-          <el-date-picker id="el-date-picker" class="w-100" v-model="inqTxnTimeEnd" type="date" placeholder="交易日期（迄）">
+        <el-col  class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
+          <el-date-picker id="el-date-picker" class="w-100 endDate" v-model="inqTxnTimeEnd" type="date" placeholder="交易日期（迄）">
           </el-date-picker>
         </el-col>
         <el-col  class="text-right mb-3" :xl="3" :lg="5" :md="6" :sm="8" :xs="24">
-          <div id="aa">
+          <div id="searchBtnContainer">
             <el-button icon="el-icon-search" type="info" @click="getData()" id="searchBtn">
               搜尋
             </el-button>
@@ -620,15 +620,6 @@ export default {
   .phone-hide {
     display: none;
   }
-
-  // #orderNumIpt {
-  //   width: 50%;
-  // }
-
-  // #searchOrderNumBtn {
-  //   position: relative;
-  //   top: -60px;
-  // }
 }
 
 @media screen and (min-width:768px) {
@@ -719,31 +710,44 @@ export default {
   color: #A0A0A0;
 }
 
+
+@media screen and (max-width:1000px) {
+  #searchBtnContainer {
+    height: 70px;
+    position: relative;
+  }
+  #searchBtn {
+    position: absolute;
+    //top: -59px;
+    left: 130px;
+  }
+
+  .endDate {
+    margin-left: 60px;
+  }
+}
+
 @media screen and (max-width:765px) {
-  #searchBtn {
+  #searchBtnContainer {
+    height: 70px;
     position: relative;
-    top: -59px;
-    left: -256px;
+  }
+  #searchBtn {
+    position: absolute;
+    //top: -59px;
+    left: 0px;
+  }
+
+  .endDate {
+    margin-left: 0px;
   }
 }
-
-@media screen and (max-width:682px) {
-  #searchBtn {
-    position: relative;
-    top: -9px;
-    left: -256px;
-  }
-}
-
-@media screen and (max-width:500) {
-  #searchBtn {
-    position: relative;
-    top: -9px;
-    left: -256px;
-  }
-
-  #aa {
-    border: 1px solid red;
+@media screen and (max-width:535px) {
+ 
+  #searchContainer{
+    display: flex;
+    flex-direction: column;
+    
   }
 }
 
