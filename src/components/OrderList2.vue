@@ -91,13 +91,6 @@
           <el-table-column sortable label="交易日期" prop="acctDate" align="center"> </el-table-column>
           <el-table-column sortable label="訂單金額" prop="txnAmt" align="center"> </el-table-column>
         </el-table-column>
-<<<<<<< HEAD
-        <el-table-column label="付款方式" prop="payType"></el-table-column>
-        <el-table-column sortable label="建立日期時間" prop="crtDate"></el-table-column>
-        <el-table-column sortable label="交易日期時間" prop="txnDate"> </el-table-column>
-        <el-table-column sortable label="訂單金額" prop="txnAmt"> </el-table-column>
-=======
->>>>>>> 26248d1cd1322b6f033540c2313758694d837f7d
       </el-table>
     </el-card>
     <div class="paginationContainer">
@@ -552,32 +545,6 @@ export default {
         item.acctDate = this.$moment(item.acctDate).format('YYYY-MM-DD')
       })
     },
-    // 暫時棄用
-    filterData() {
-      let filterResult = JSON.parse(JSON.stringify(this.data));
-      let regExp = new RegExp(this.searchText);
-
-      // 時間搜尋
-      if (this.inqTxnTimeStart || this.inqTxnTimeEnd) {
-        filterResult = filterResult.filter(item => {
-          return this.inqTxnTimeStart <= new Date(item.crtDateTime) && new Date(item.txnDateTime) <= this.inqTxnTimeEnd
-        })
-      }
-
-      // 文字搜尋
-      if (this.searchText) {
-        filterResult = filterResult.filter(item => {
-          return regExp.test(item.orderNumber)
-        });
-      }
-      this.data = filterResult;
-    },
-    allFilterReset() {
-      this.searchText = '';
-      this.inqTxnTimeStart = '';
-      this.inqTxnTimeEnd = '';
-      this.getData()
-    },
     tableRowClassName({ row }) {
       if (row.txnStatus === '交易失敗') {
         return 'warning-row';
@@ -601,8 +568,6 @@ export default {
   },
   created() {
     this.getData()
-  },
-  fonSearch() {
   },
 };
 </script>
