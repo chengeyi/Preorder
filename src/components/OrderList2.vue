@@ -29,7 +29,7 @@
           </el-date-picker>
         </el-col>
         <el-col  class="text-right mb-3" :xl="3" :lg="3" :md="6" :sm="8" :xs="24">
-          <div id="aa">
+          <div id="searchBtnContainer">
             <el-button icon="el-icon-search" type="info" @click="getData()" id="searchBtn">
               搜尋
             </el-button>
@@ -38,7 +38,13 @@
       </el-row>
 
       <!-- 訂單列表數據 -->
-      <div class="dataLength"> {{dataLength}} 筆</div>
+      <div class="dataLength">
+        查詢時間:
+        <span class="underline">{{searchedTime}}</span>
+        ;查詢結果:
+        <span class="underline">{{dataLength}}</span>
+        筆
+      </div>
       <el-table
         id="tableContainer"
         v-loading="loading"
@@ -526,9 +532,6 @@ export default {
     }
   },
   methods: {
-    selectChange(value) {
-      console.log(value);
-    },
     getData() {
       // if (this.examination) {
       //   return
@@ -712,7 +715,7 @@ export default {
 
 @media screen and (max-width:1000px) {
   #searchBtnContainer {
-    height: 70px;
+    height: 100%;
     position: relative;
   }
   #searchBtn {
@@ -790,14 +793,21 @@ export default {
 }
 
 .dataLength {
-  width: 40px;
-  height: 40px;
   color: #FFFFFF;
   position: absolute;
   right: 6rem;
   top: 7.2rem;
   z-index: 999;
   line-height: 40px;
+}
+
+@media screen and (max-width:768px) {
+  .dataLength {
+    position: unset;
+    right: 6rem;
+    top: 8rem;
+    color: #333;
+  }
 }
 
 td {
@@ -858,5 +868,10 @@ td {
 
 #searchContainer {
   margin-top: 10px;
+}
+
+.underline {
+  padding: 0px 4px;
+  text-decoration: underline;
 }
 </style>
