@@ -615,7 +615,7 @@ export default {
   height: 48px;
   background-color: #4177FF;
   position: relative;
-  left: -140px;
+  // left: -140px;
 }
 
 @media screen and (max-width:767px) {
