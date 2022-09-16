@@ -1,11 +1,11 @@
 <template>
   <div>
     <!--導航區-->
-    <el-breadcrumb separator="/">
+    <!-- <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/home' }">首頁</el-breadcrumb-item>
       <el-breadcrumb-item>訂單管理</el-breadcrumb-item>
       <el-breadcrumb-item>訂單列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    </el-breadcrumb> -->
     <el-card id="cardContainer">
       <!-- <div class="filterContainer">
         <div class="filterFont">搜尋方式</div>
@@ -28,7 +28,7 @@
           <el-date-picker id="el-date-picker" class="w-100" v-model="inqTxnTimeEnd" type="date" placeholder="交易日期（迄）">
           </el-date-picker>
         </el-col>
-        <el-col  class="text-right mb-3" :xl="3" :lg="5" :md="6" :sm="8" :xs="24">
+        <el-col  class="text-right mb-3" :xl="3" :lg="3" :md="6" :sm="8" :xs="24">
           <div id="aa">
             <el-button icon="el-icon-search" type="info" @click="getData()" id="searchBtn">
               搜尋
@@ -39,18 +39,17 @@
 
       <!-- 訂單列表數據 -->
       <div class="dataLength"> {{dataLength}} 筆</div>
-      <el-table 
+      <el-table
         id="tableContainer"
         v-loading="loading"
         element-loading-text="拼命加載中"
         element-loading-spinner="el-icon-loading"
         element-loading-background="rgba(0, 0, 0, 0.8)"
         class="phone-hide"
-        :data="displayData" 
-        style="width: 100%" 
+        :data="displayData"
+        style="width: 100%"
         :row-class-name="tableRowClassName">
         <el-table-column label="查詢結果" width="150">
-
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-descriptions title="訂單明細" class="mb-3 ml-5 mr-5">
@@ -510,13 +509,11 @@ export default {
       },
       //物流信息列表
       progressInfo: [],
+      searchedTime: '',
     };
   },
   mounted(){
     this.getData()
-    // setTimeout(()=>{
-    //   this.loading = false
-    // }, 2000)
   },
   computed: {
     ...mapState(['examination']),
@@ -536,15 +533,14 @@ export default {
       // if (this.examination) {
       //   return
       // }
-      this.loading = true
+      this.loading = true;
       let api = 'http://192.168.1.122/servlet/twpay/V1/controller/QueryServlet';
       let data = {
         txnDateStart: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeStart).format('YYYYMMDD') : '',
         txnDateEnd: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeEnd).format('YYYYMMDD') : '',
       }
-      console.log(data)
       let sendData = "requestHeader={}&requestBody=" + JSON.stringify(data);
-      
+
       this.axios(api, {
         method: 'POST',
         headers: {
@@ -552,7 +548,7 @@ export default {
         },
         data: sendData
       }).then((res) => {
-        console.log(res)
+        this.getSearchTime()
         this.loading = false
         this.data = JSON.parse(JSON.stringify(res.data.responseBody.inQueryVo))
         this.data.forEach(item => {
@@ -585,7 +581,10 @@ export default {
     },
     handleCurrentChange(val) {
       this.page = val;
-    }
+    },
+    getSearchTime(){
+      this.searchedTime = new Date().toLocaleString()
+    },
   },
   created() {
     this.getData()
