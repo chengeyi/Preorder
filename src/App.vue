@@ -1,8 +1,7 @@
 <template >
-  <div id="app">
-    <!-- <Center></Center> -->
-    <!-- <OrderList></OrderList> -->
-    <OrderList2></OrderList2>
+  <div id="app" class="appContainer">
+    <!-- <sideNav id="sideNav"></sideNav> -->
+    <OrderList2 id="OrderList"></OrderList2>
   </div>
 </template>
 
@@ -10,29 +9,51 @@
 // import Center from './components/Center.vue'
 // import OrderList from './components/OrderList.vue'
 import OrderList2 from './components/OrderList2.vue'
+// import sideNav from './components/sideNav.vue'
 export default {
   name: 'App',
   components: {
-    // Center,
-    // OrderList,
-    OrderList2
+    OrderList2,
+    // sideNav,
   }
 }
 </script>
 
 <style>
+*{
+  margin: 0;
+  padding: 0;
+}
+
+.appContainer{
+
+}
+
+#sideNav{
+  /* flex-grow: 2; */
+}
+
+#OrderList{
+  /* flex-grow: 1; */
+  width: 100%;
+}
+
 .ml-3{
   margin-left: 12px;
 }
+
 .ml-5{
   margin-left: 30px;
 }
+
 .mr-3{
   margin-right: 12px;
 }
+
 .mr-5{
   margin-right: 30px;
 }
+
 .mb-3{
   margin-bottom: 12px;
 }
