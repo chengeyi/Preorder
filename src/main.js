@@ -12,15 +12,10 @@ import 'element-ui/lib/theme-chalk/display.css'
 import locale from 'element-ui/lib/locale/lang/zh-TW'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition';
 locale.el.pagination = {
- 
   goto: '跳至',
-   
   pagesize: '',
-   
   total: `{total}`,
-   
   pageClassifier: '頁',
-   
   };
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
