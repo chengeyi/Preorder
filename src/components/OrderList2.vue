@@ -12,27 +12,26 @@
         <topNav id="topNavContainer"></topNav>
         <div class="outside">
           <el-row :gutter="24" id="searchContainer">
-            
             <el-col class="mb-3" :xl="7" :lg="8" :md="6" :sm="6" :xs="24" id="iptContainer">
-              <el-input prefix-icon="el-icon-search" id="orderNumIpt" placeholder="商店代號查詢" v-model="storeId"
+              <el-input prefix-icon="el-icon-search" id="orderNumIpt" :placeholder="langData.wSearchStoreID" v-model="storeId"
                 suffix-icon="el-icon-circle-close">
               </el-input>
               <span class="circle-close" @click="clickCircleClose()"></span>
             </el-col>
             <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
               <el-date-picker id="el-date-picker" class="w-100" v-model="inqTxnTimeStart" type="date"
-                placeholder="交易日期（起）">
+                :placeholder="langData.wSearchStartTime">
               </el-date-picker>
             </el-col>
             <el-col class="mb-3" :xl="7" :lg="5" :md="6" :sm="5" :xs="12">
               <el-date-picker id="el-date-picker" class="w-100 endDate" v-model="inqTxnTimeEnd" type="date"
-                placeholder="交易日期（迄）">
+                :placeholder="langData.wSearchEndTime">
               </el-date-picker>
             </el-col>
             <el-col class="text-right mb-3" :xl="3" :lg="5" :md="6" :sm="8" :xs="24">
               <div id="searchBtnContainer">
                 <el-button icon="el-icon-search" type="info" @click="getData()" id="searchBtn">
-                  搜尋
+                  {{langData.wSearch}}
                 </el-button>
               </div>
             </el-col>
@@ -46,26 +45,34 @@
         </div>
   
         <!-- 訂單列表數據 -->
-        <div class="dataLength phone-hide"> {{dataLength}} 筆</div>
-        <el-table 
+        <div class="dataLength phone-hide">
+          <span class="me-4">
+            {{langData.wSearchTime}}: {{searchTime}}
+          </span>
+          <span>
+            
+            {{langData.wList}}: {{dataLength}} {{langData.wStroke}}
+          </span>
+        </div>
+        <el-table
           stripe
           :header-cell-class-name="cellClass"
-          id="tableContainer" 
-          v-loading="loading" 
-          element-loading-text="拼命加載中"
-          element-loading-spinner="el-icon-loading" 
-          element-loading-background="rgba(0, 0, 0, 0.8)" 
+          id="tableContainer"
+          v-loading="loading"
+          :element-loading-text="langData.wLoading"
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)"
           class="phone-hide"
-          :data="displayData" 
-          style="width: 100%" 
-          @click="toogleExpandCargo(scope.row)" 
+          :data="displayData"
+          style="width: 100%"
+          @click="toogleExpandCargo(scope.row)"
           ref="cargoTable"
-          @cell-mouse-enter="enter" 
+          @cell-mouse-enter="enter"
           @cell-mouse-leave="leave">
-          <el-table-column label="查詢結果" width="150">
+          <el-table-column :label="langData.wResult" width="150">
             <el-table-column type="expand" @click="toogleExpandCargo(scope.row)">
               <template slot-scope="props">
-                <el-descriptions title="訂單明細" class="mb-3 ml-5 mr-5">
+                <el-descriptions :title="langData.wOrderDetail" class="mb-3 ml-5 mr-5">
                   <el-descriptions-item label="銀行端交易序號">
                     {{ props.row.txnSeqno }}
                   </el-descriptions-item>
@@ -135,7 +142,6 @@
             <el-table-column sortable label="建立日期" prop="crtDate" align="center" v-if="showColumn.crtDate"></el-table-column>
             <el-table-column sortable label="交易日期" prop="acctDate" align="center" v-if="showColumn.acctDate"> </el-table-column>
             <el-table-column sortable label="訂單金額" prop="txnAmt" align="center" v-if="showColumn.txnAmt"> </el-table-column>
-           
           </el-table-column>
         </el-table>
         <div v-for="item in data" :key="item.orderNumber" class="listContainer web-hide">
@@ -164,14 +170,14 @@
           </div>
         </div>
         <div class="paginationContainer">
-          <p class="paginationFont phone-hide">每頁筆數 - </p>
-          <el-pagination 
-            class="phone-hide" 
-            @size-change="handleSizeChange" 
+          <p class="paginationFont phone-hide">{{langData.wOrderOfPage}} - </p>
+          <el-pagination
+            class="phone-hide"
+            @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-            :page-sizes="[5, 10, 15, 20]" 
-            :page-size="pageSize" 
-            layout="sizes, prev, pager, next, jumper" 
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="pageSize"
+            layout="sizes, prev, pager, next, jumper"
             :total="data.length">
           </el-pagination>
         </div>
@@ -276,10 +282,13 @@
     </el-dialog>
   </div>
 </template>
- 
+
 <script>
 import { mapState } from 'vuex';
-import topNav from './topNav.vue'
+import topNav from './topNav.vue';
+import { ch } from '../assets/lang/ch';
+
+console.log(ch);
 export default {
   components:{
     topNav
@@ -721,6 +730,11 @@ export default {
       },
       //物流信息列表
       progressInfo: [],
+      // 查詢時間
+      searchTime: '',
+      // 語言選擇
+      lang: 'ch',
+      langData: ch,
     };
   },
   mounted() {
@@ -753,7 +767,6 @@ export default {
     },0)
 
     //欄位顯示隱藏
-    
 
     // setTimeout(()=>{
     // this.loading = false
@@ -770,13 +783,12 @@ export default {
     }
   },
   methods: {
-    
     handleChangeColor(value){
       console.log(value)
       this.changeColor = value;
 
       //將色碼轉16進位
-      const reg = /[0-9]\d+/g
+      const reg = /[0 -9]\d+/g
       const getArr =  this.changeColor.match(reg)
       let hexStr = '#'+((getArr[0] << 16) | (getArr[1]  << 8) | getArr[2] ).toString(16);
 
@@ -826,7 +838,7 @@ export default {
       }else{
         let input = document.querySelectorAll('.el-input__inner');
         let inputIcon = document.querySelectorAll('.el-input__icon');
-        let  tableStyle = document.querySelectorAll('.tableStyle > .cell')
+        let tableStyle = document.querySelectorAll('.tableStyle > .cell')
         let dataLength = document.querySelector('.dataLength')
         let tableContainer = document.querySelector('#tableContainer')
         let tableBorder = document.querySelector('.el-table--border th.el-table__cell')
@@ -965,7 +977,6 @@ export default {
         txnDateStart: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeStart).format('YYYYMMDD') : '',
         txnDateEnd: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeEnd).format('YYYYMMDD') : '',
       }
-      console.log(data)
       let sendData = "requestHeader={}&requestBody=" + JSON.stringify(data);
 
       this.axios(api, {
@@ -975,7 +986,6 @@ export default {
         },
         data: sendData
       }).then((res) => {
-        console.log(res)
         this.loading = false
         this.data = JSON.parse(JSON.stringify(res.data.responseBody.inQueryVo))
         this.data.forEach(item => {
@@ -986,6 +996,9 @@ export default {
           item.txnDate = this.$moment(item.txnDate).format('YYYY-MM-DD')
           item.acctDate = this.$moment(item.acctDate).format('YYYY-MM-DD')
         })
+      }).finally(()=>{
+        let now = new Date()
+        this.searchTime = now.toLocaleString();
       });
       this.loading = false
     },
@@ -1396,7 +1409,6 @@ export default {
 }
 
 .dataLength {
-  width: 40px;
   height: 40px;
   color: #c1c1c1;
   position: absolute;
