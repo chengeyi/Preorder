@@ -1003,7 +1003,7 @@ export default {
       // }
       console.log(this.storeId)
       this.loading = true
-      let api = 'http://192.168.10.120:81/servlet/twpay/V1/controller/QueryServlet';
+      let api = 'http://192.168.11.162:81/servlet/twpay/V1/controller/QueryServlet';
       let data = {
         txnDateStart: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeStart).format('YYYYMMDD') : '',
         txnDateEnd: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeEnd).format('YYYYMMDD') : '',
@@ -1021,19 +1021,21 @@ export default {
         console.log(res)
         if(res.data.responseBody.rtnMsg != '查無資料'){
           this.showColumn = JSON.parse(localStorage.showColumn)
-          let a = res.data.responseBody.queryVo
-          console.log(a)
-          // let b =[]
-          // for(let i = 0; i<a.length; i++){
-          //   b.push(a[i].inQueryVo)
-          // }
-          // console.log(b)
-          // for(let i = 0; i<b.length; i++){
-          //   for(let j = 0; j<b[i].length; j++){
+          let orgDAta = res.data.responseBody.queryVo
 
-          //   }
-          // }
-          this.data = res.data.responseBody.queryVo[3].inQueryVo
+          let insideArr = []
+          let outsideArr = []
+          for(let i = 0; i<orgDAta.length; i++){
+            insideArr.push(orgDAta[i].inQueryVo)
+          }
+
+          for(let i = 0; i<insideArr.length; i++){
+            for(let j = 0; j<insideArr[i].length; j++){
+              outsideArr.push(insideArr[i][j])
+            }
+          }
+          this.data = outsideArr
+          //this.data = res.data.responseBody.queryVo[3].inQueryVo
           this.data.forEach(item => {
             this.$set(item, "isShow", false)
           });
