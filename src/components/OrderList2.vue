@@ -88,25 +88,25 @@
                   <el-descriptions-item label="載具顯碼 id">
                     {{ props.row.carrierId1 }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="訂單編號" v-if="!showColumn.orderNumber">
+                  <el-descriptions-item :label="langData.wOrderNumner" v-if="!showColumn.orderNumber">
                     {{ props.row.orderNumber }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="商店代號" v-if="!showColumn.storeId">
+                  <el-descriptions-item :label="langData.wStoreNumner" v-if="!showColumn.storeId">
                     {{ props.row.storeId }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="執行結果說明" v-if="!showColumn.rtnMsg">
+                  <el-descriptions-item :label="langData.wOrderStatus" v-if="!showColumn.rtnMsg">
                     {{ props.row.rtnMsg }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="付款方式" v-if="!showColumn.payType">
+                  <el-descriptions-item :label="langData.wPayMethod" v-if="!showColumn.payType">
                     {{ props.row.payType }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="建立日期" v-if="!showColumn.crtDate">
+                  <el-descriptions-item :label="langData.wCreateDate" v-if="!showColumn.crtDate">
                     {{ props.row.crtDate }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="交易日期" v-if="!showColumn.acctDate">
+                  <el-descriptions-item :label="langData.wTradeDate" v-if="!showColumn.acctDate">
                     {{ props.row.acctDate }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="訂單金額" v-if="!showColumn.txnAmt">
+                  <el-descriptions-item :label="langData.wTradeAmount" v-if="!showColumn.txnAmt">
                     {{ props.row.txnAmt }}
                   </el-descriptions-item>
                 </el-descriptions>
@@ -288,7 +288,6 @@ import { mapState } from 'vuex';
 import topNav from './topNav.vue';
 import { ch } from '../assets/lang/ch';
 
-console.log(ch);
 export default {
   components:{
     topNav
