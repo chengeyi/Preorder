@@ -1,6 +1,7 @@
 <template >
   <div id="app" class="appContainer">
     <!-- <sideNav id="sideNav"></sideNav> -->
+    <!-- <OrderList2 id="OrderList"></OrderList2> -->
     <OrderList2 id="OrderList"></OrderList2>
   </div>
 </template>
@@ -15,6 +16,7 @@ export default {
   components: {
     OrderList2,
     // sideNav,
+    //OrderList
   }
 }
 </script>
