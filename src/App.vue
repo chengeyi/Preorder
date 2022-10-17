@@ -15,7 +15,6 @@ import { mapActions } from 'vuex'
 // import sideNav from './components/sideNav.vue'
 export default {
   name: 'App',
-  },
   components: {
     OrderList2,
     // sideNav,
