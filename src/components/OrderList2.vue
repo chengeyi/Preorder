@@ -60,6 +60,7 @@
           id="tableContainer"
           v-loading="loading"
           :element-loading-text="langData.wLoading"
+          empty-text="暫無資料，請重新查詢"
           element-loading-spinner="el-icon-loading"
           element-loading-background="rgba(0, 0, 0, 0.8)"
           class="phone-hide"
@@ -68,11 +69,12 @@
           @click="toogleExpandCargo(scope.row)"
           ref="cargoTable"
           @cell-mouse-enter="enter"
-          @cell-mouse-leave="leave">
+          @cell-mouse-leave="leave"
+          @expand-change="handledetail">
           <el-table-column :label="langData.wResult" width="150">
             <el-table-column type="expand" @click="toogleExpandCargo(scope.row)">
               <template slot-scope="props">
-                <el-descriptions :title="langData.wOrderDetail" class="mb-3 ml-5 mr-5">
+                <el-descriptions :title="langData.wOrderDetail" class="mb-3 ml-5 mr-5 descriptions">
                   <el-descriptions-item label="銀行端交易序號">
                     {{ props.row.txnSeqno }}
                   </el-descriptions-item>
@@ -104,7 +106,7 @@
                     {{ props.row.crtDate }}
                   </el-descriptions-item>
                   <el-descriptions-item :label="langData.wTradeDate" v-if="!showColumn.acctDate">
-                    {{ props.row.acctDate }}
+                    {{ props.row.txnDate }}
                   </el-descriptions-item>
                   <el-descriptions-item :label="langData.wTradeAmount" v-if="!showColumn.txnAmt">
                     {{ props.row.txnAmt }}
@@ -130,17 +132,18 @@
             <el-table-column sortable label="執行結果說明" prop="rtnMsg" align="center" v-if="showColumn.rtnMsg">
               <template slot-scope="scope">
                 <el-tag effect="dark" style="width: 110px;"
-                  :type="scope.row.rtnMsg === '交易成功' ? 'success' : scope.row.rtnMsg === '交易失敗' ? 'danger' : 'primary'"
+                  :type="scope.row.txnStatus === '2' ? 'success' : scope.row.txnStatus === '3' ? 'danger' : 'primary'"
                   disable-transitions>
                   <span
-                    :class="scope.row.rtnMsg === '交易成功' ? 'el-icon-check' : scope.row.rtnMsg === '交易失敗' ? 'el-icon-close' : 'el-icon-loading'"></span>
-                  {{ scope.row.rtnMsg }}
+                    :class="scope.row.txnStatus === '1' ? 'el-icon-check' : scope.row.txnStatus === '3' ? 'el-icon-close' : 'el-icon-loading'"></span>
+                  <!-- {{ scope.row.rtnMsg }} -->
+                  交易成功
                 </el-tag>
               </template>
             </el-table-column>
             <el-table-column sortable label="付款方式" prop="payType" align="center" v-if="showColumn.payType"></el-table-column>
             <el-table-column sortable label="建立日期" prop="crtDate" align="center" v-if="showColumn.crtDate"></el-table-column>
-            <el-table-column sortable label="交易日期" prop="acctDate" align="center" v-if="showColumn.acctDate"> </el-table-column>
+            <el-table-column sortable label="交易日期" prop="txnDate" align="center" v-if="showColumn.acctDate"> </el-table-column>
             <el-table-column sortable label="訂單金額" prop="txnAmt" align="center" v-if="showColumn.txnAmt"> </el-table-column>
           </el-table-column>
         </el-table>
@@ -153,7 +156,7 @@
                 :src="item.rtnMsg === '交易成功' ? successImgUrl : item.rtnMsg === '交易失敗' ? falseImgUrl : inProcessImgUrl">
             </div>
             <div>
-              <h4>交易日期: {{ item.acctDate }}</h4>
+              <h4>交易日期: {{ item.txnDate }}</h4>
               <h5>訂單編號: {{ item.orderNumber }}</h5>
               <h5>交易類型: {{ item.txnType }}</h5>
               <h5>付款方式: {{ item.payType }}</h5>
@@ -217,13 +220,13 @@
       <transition name="fade">
         <div class="setContainer">
           <div class="checkBoxWrap">
-            <el-checkbox class="checkBox" v-model="showColumn.orderNumber">訂單編號</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.storeId">商店代號</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.rtnMsg">執行結果說明</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.payType">付款方式</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.crtDate">建立日期</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.acctDate">交易日期</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.txnAmt">訂單金額</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.orderNumber" @change="handleCheckChange">訂單編號</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.storeId" @change="handleCheckChange">商店代號</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.rtnMsg" @change="handleCheckChange">執行結果說明</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.payType" @change="handleCheckChange">付款方式</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.crtDate" @change="handleCheckChange">建立日期</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.acctDate" @change="handleCheckChange">交易日期</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.txnAmt" @change="handleCheckChange">訂單金額</el-checkbox>
           </div>
           <div class="colorWrap">
             <div class="colorPicker">
@@ -376,328 +379,328 @@ export default {
       inqTxnTimeStart: '',
       inqTxnTimeEnd: '',
       data: [
-        {
-          "txnDir": "RQ",
-          "storeId": "test1231",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "10000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易進行中",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test1232",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "20000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易成功",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test1233",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "30000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易進行中",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test1234",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "40000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易成功",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test1235",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "50000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易成功",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test1236",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "60000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易失敗",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test1237",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "70000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易失敗",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test1238",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "50000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易失敗",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test1239",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "60000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易失敗",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test12310",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "70000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易失敗",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test12311",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "80000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易進行中",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test12312",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "90000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易成功",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test12313",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "10000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易進行中",
-          "sign": ""
-        },
-        {
-          "txnDir": "RQ",
-          "storeId": "test12314",
-          "endpointCode": "test123",
-          "terminalId": "",
-          "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
-          "txnSeqno": "TXN202208290001",
-          "payType": "C",
-          "acctDate": "20220830",
-          "txnAccNO": "432188******3389",
-          "crtDate": "20220829",
-          "crtTime": "175555",
-          "txnDate": "20220829",
-          "txnTime": "175628",
-          "txnCurrency": "901",
-          "txnAmt": "10000",
-          "carrierType": "",
-          "carrierId1": "",
-          "storeMemo": "max測試",
-          "rtnCode": "0000",
-          "rtnMsg": "交易成功",
-          "sign": ""
-        },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test1231",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "10000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易進行中",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test1232",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "20000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易成功",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test1233",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "30000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易進行中",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test1234",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "40000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易成功",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test1235",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "50000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易成功",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test1236",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "60000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易失敗",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test1237",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "70000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易失敗",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test1238",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "50000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易失敗",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test1239",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "60000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易失敗",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test12310",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "70000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易失敗",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test12311",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "80000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易進行中",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test12312",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "90000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易成功",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test12313",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "10000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易進行中",
+        //   "sign": ""
+        // },
+        // {
+        //   "txnDir": "RQ",
+        //   "storeId": "test12314",
+        //   "endpointCode": "test123",
+        //   "terminalId": "",
+        //   "orderNumber": "1f031d1e-d18f-47fe-a7d8-d303b2d12123",
+        //   "txnSeqno": "TXN202208290001",
+        //   "payType": "C",
+        //   "acctDate": "20220830",
+        //   "txnAccNO": "432188******3389",
+        //   "crtDate": "20220829",
+        //   "crtTime": "175555",
+        //   "txnDate": "20220829",
+        //   "txnTime": "175628",
+        //   "txnCurrency": "901",
+        //   "txnAmt": "10000",
+        //   "carrierType": "",
+        //   "carrierId1": "",
+        //   "storeMemo": "max測試",
+        //   "rtnCode": "0000",
+        //   "rtnMsg": "交易成功",
+        //   "sign": ""
+        // },
       ],
       // customColor: '#409eff',
       // cityData,
@@ -741,8 +744,7 @@ export default {
     //localStorage.clear();
 
     //判斷光暗模式
-    console.log(JSON.parse(localStorage.showColumn))
-    this.showColumn = JSON.parse(localStorage.showColumn)
+    this.showColumn = JSON.parse(localStorage.showColumn || '')
     
     if(localStorage.sun == 'true'){
       this.sun = true;
@@ -760,16 +762,11 @@ export default {
 
     //背景圖
     let imgs = document.querySelector('.el-card__body');
+    console.log(imgs)
     imgs.style.backgroundImage=`url(${require(`@/assets/${localStorage.backgroundImg}`)})`;
     setTimeout(()=>{
       this.changeBackImg(localStorage.backgroundImg)
     },0)
-
-    //欄位顯示隱藏
-
-    // setTimeout(()=>{
-    // this.loading = false
-    // }, 2000)
   },
   computed: {
     ...mapState(['examination']),
@@ -779,22 +776,65 @@ export default {
     displayData() {
       if (!this.data || this.data.length === 0) return [];
       return this.data.slice(this.pageSize * this.page - this.pageSize, this.pageSize * this.page)
-    }
+    },
+    //模糊搜尋功能
+    // tables() {
+    //   let search = this.search;
+    //   if(search){
+    //     return this.data.filter((dataNews)=>{
+    //       return Object.keys(dataNews).some((key)=>{
+    //         return String(dataNews[key]).toLowerCase().indexOf(search) > -1
+    //       })
+    //     })
+    //   }
+    //   return this.data
+    // }
   },
   methods: {
+    handleCheckChange(){
+      let img = this.defaultImg
+      setTimeout(()=>{
+        this.changeBackImg(img)
+      },0)
+    },
+    handledetail(){
+      let img = this.defaultImg
+      setTimeout(()=>{
+        if(img == 'images/暗圖.jpg' || img == 'images/暗圖2.jpg' || img == 'images/暗圖3.jpg' || img == 'images/暗圖4.jpg'){
+        let activ = document.querySelectorAll('.activ');
+        for(let i = 0; i<activ.length; i++){
+          activ[i].classList.remove('activ')
+        }
+        }else{
+          let descriptions = document.querySelectorAll('.el-descriptions-item__container .el-descriptions-item__label')
+          for(let i = 0; i<descriptions.length; i++){
+            descriptions[i].classList.add('activ')
+          }
+
+          let descriptions__title = document.querySelectorAll('.el-descriptions__title')
+          for(let i = 0; i<descriptions__title.length; i++){
+            descriptions__title[i].classList.add('activ')
+          }
+
+          let descriptions_item__content = document.querySelectorAll('.el-descriptions-item__container .el-descriptions-item__content')
+          for(let i = 0; i<descriptions_item__content.length; i++){
+            descriptions_item__content[i].classList.add('activ')
+          }
+        }
+      },0)
+    },
     handleChangeColor(value){
-      console.log(value)
       this.changeColor = value;
 
       //將色碼轉16進位
-      const reg = /[0 -9]\d+/g
-      const getArr =  this.changeColor.match(reg)
-      let hexStr = '#'+((getArr[0] << 16) | (getArr[1]  << 8) | getArr[2] ).toString(16);
+      // const reg = /[0 -9]\d+/g
+      // const getArr =  this.changeColor.match(reg)
+      // let hexStr = '#'+((getArr[0] << 16) | (getArr[1]  << 8) | getArr[2] ).toString(16);
 
       setTimeout(()=>{
         let thColor = document.querySelectorAll('.el-table th.el-table__cell>.cell')
         for(let i = 2; i<thColor.length; i++){
-          thColor[i].style.color = hexStr;
+          thColor[i].style.color = value;
         }
       },0)
 
@@ -893,10 +933,6 @@ export default {
         for(let i = 0; i<number.length ;i++){
           number[i].classList.add('activ2');
         }
-
-        let select__caret = document.querySelector('.el-select__caret')
-        select__caret.classList.add('activ');
-        
       }
     },
     cellClass() {
@@ -918,32 +954,32 @@ export default {
       //console.log(row)
       //this.$refs['popover'+row.storeId].showPopper = false
     },
-    www(a, b) {
-      console.log(a, b)
-       let dleActive = document.getElementsByClassName('domActive')
-       setTimeout(()=>{
-          dleActive[0].classList.remove('domActive')
-        },0)
-       console.log(dleActive)
-      let storeId = document.getElementsByClassName('cell')
-      // for(let i = 0; i<storeId.length; i++){
-      //   if(storeId[i].innerText !== a.storeId){
-      //     let addActive = storeId[i].parentNode.parentNode
-      //     addActive.style.backgroundColor = "";
-      //   }
-      // }
-      for(let i = 0; i<storeId.length; i++){
-        if(storeId[i].innerText == a.storeId){
-          let addActive = storeId[i].parentNode.parentNode
-          //addActive.style.backgroundColor = "#69b2ee";
-          console.log(addActive)
-          setTimeout(()=>{
-            addActive.classList.add('domActive')
-            console.log(addActive)
-          },0)
-        }
-      }
-    },
+    // www(a, b) {
+    //   console.log(a, b)
+    //    let dleActive = document.getElementsByClassName('domActive')
+    //    setTimeout(()=>{
+    //       dleActive[0].classList.remove('domActive')
+    //     },0)
+    //    console.log(dleActive)
+    //   let storeId = document.getElementsByClassName('cell')
+    //   // for(let i = 0; i<storeId.length; i++){
+    //   //   if(storeId[i].innerText !== a.storeId){
+    //   //     let addActive = storeId[i].parentNode.parentNode
+    //   //     addActive.style.backgroundColor = "";
+    //   //   }
+    //   // }
+    //   for(let i = 0; i<storeId.length; i++){
+    //     if(storeId[i].innerText == a.storeId){
+    //       let addActive = storeId[i].parentNode.parentNode
+    //       //addActive.style.backgroundColor = "#69b2ee";
+    //       console.log(addActive)
+    //       setTimeout(()=>{
+    //         addActive.classList.add('domActive')
+    //         console.log(addActive)
+    //       },0)
+    //     }
+    //   }
+    // },
     toogleExpandCargo(row) {
       console.log(row)
       let $table = this.$refs.cargoTable;
@@ -954,30 +990,24 @@ export default {
       });
       $table.toggleRowExpansion(row);
     },
-    testtt(row, expandedRows) {
-      console.log(row, expandedRows)
-    },
-    // handle(row,column,cell,event) {
-    // console.log(row)
-    // console.log(column)
-    // console.log(cell)
-    // console.log(event)
+    // testtt(row, expandedRows) {
+    //   console.log(row, expandedRows)
     // },
     selectChange(value) {
       console.log(value);
     },
     getData() {
-      if (this.examination) {
-        return
-      }
+      // if (this.examination) {
+      //   return
+      // }
       this.loading = true
-      let api = 'http://192.168.10.120/servlet/twpay/V1/controller/QueryServlet';
+      let api = 'http://192.168.10.120:81/servlet/twpay/V1/controller/QueryServlet';
       let data = {
         txnDateStart: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeStart).format('YYYYMMDD') : '',
         txnDateEnd: this.inqTxnTimeStart ? this.$moment(this.inqTxnTimeEnd).format('YYYYMMDD') : '',
+        storeId:this.storeId
       }
       let sendData = "requestHeader={}&requestBody=" + JSON.stringify(data);
-
       this.axios(api, {
         method: 'POST',
         headers: {
@@ -985,21 +1015,44 @@ export default {
         },
         data: sendData
       }).then((res) => {
-        this.loading = false
-        this.data = JSON.parse(JSON.stringify(res.data.responseBody.inQueryVo))
-        this.data.forEach(item => {
-          this.$set(item, "isShow", false)
-        });
-        this.data.forEach((item) => {
-          item.crtDate = this.$moment(item.crtDate).format('YYYY-MM-DD')
-          item.txnDate = this.$moment(item.txnDate).format('YYYY-MM-DD')
-          item.acctDate = this.$moment(item.acctDate).format('YYYY-MM-DD')
-        })
+        if(res.data.responseBody.rtnMsg != '查無資料'){
+          // this.showColumn = JSON.parse(localStorage.showColumn)
+          // let b =[]
+          // for(let i = 0; i<a.length; i++){
+          //   b.push(a[i].inQueryVo)
+          // }
+          // console.log(b)
+          // for(let i = 0; i<b.length; i++){
+          //   for(let j = 0; j<b[i].length; j++){
+
+          //   }
+          // }
+          // res.data.responseBody.queryVo.forEach(item=>{
+          //   item.inQueryVo.forEach(data=>{
+          //     console.log(data)
+          //     this.$set(data, "isShow", false)
+          //   })
+          // })
+          res.data.responseBody.queryVo[3].inQueryVo.forEach(item => {
+            console.log(item)
+            this.$set(item, "isShow", false)
+          });
+          this.data.forEach((item) => {
+            item.crtDate = this.$moment(item.crtDate).format('YYYY-MM-DD')
+            item.txnDate = this.$moment(item.txnDate).format('YYYY-MM-DD')
+            item.acctDate = this.$moment(item.acctDate).format('YYYY-MM-DD')
+          })
+          this.loading = false
+        }else{
+          this.data = []
+          this.loading = false
+        }
+        
       }).finally(()=>{
         let now = new Date()
         this.searchTime = now.toLocaleString();
       });
-      this.loading = false
+      //this.loading = false
     },
     // tableRowClassName({ row }) {
     //   if (row.rtnMsg === '交易失敗') {
@@ -1018,11 +1071,33 @@ export default {
       this.storeId = ''
     },
     handleSizeChange(val) {
-      this.pageSize = val
+      this.pageSize = val;
+      //更改每頁筆數時，td顏色
+      setTimeout(()=>{
+        let img = this.defaultImg
+        if(img == 'images/暗圖.jpg' || img == 'images/暗圖2.jpg' || img == 'images/暗圖3.jpg' || img == 'images/暗圖4.jpg'){
+          let activDom = document.querySelectorAll('.activ')
+          for(let i = 0; i < activDom.length;){
+            activDom[i].classList.remove('activ')
+          }
+        }else{
+          let tdFon = document.querySelectorAll('.el-table__body-wrapper .el-table__cell .cell')
+          for(let i = 0; i < tdFon.length; i++){
+            tdFon[i].classList.add('activ');
+          }
+  
+          let arrow = document.querySelectorAll('.el-icon-arrow-right')
+          for(let i = 0; i < arrow.length; i++){
+            arrow[i].classList.add('activ');
+          }
+        }
+
+      },0)
+      //this.handleSizeChangeAndChangeColor();
     },
     handleCurrentChange(val) {
       this.page = val;
-    }
+    },
   },
   created() {
     this.getData()
@@ -1196,6 +1271,12 @@ export default {
   background-color: #4177FF;
   position: relative;
   left: -140px;
+  border: none;
+}
+
+#searchBtn:hover {
+  background-color: #195bff;
+  border: none;
 }
 
 @media screen and (max-width:767px) {
@@ -1586,6 +1667,7 @@ td {
 }
 
 /deep/ .el-card__body{
+  min-height: 100vh;
   background-image: url(../assets/images/暗圖.jpg);
   //background-image: url(https://images.unsplash.com/photo-1589190632370-dcc9388aab4b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2640&q=80);
   //background-image: url(https://images.unsplash.com/photo-1623118176083-897933d9977f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80);
@@ -1771,5 +1853,56 @@ td {
 //   border-top-color: #5c5c5c;
 // }
 
+/deep/ .el-descriptions__body{
+  background-color: transparent;
+}
 
+/deep/ .el-descriptions-item__label{
+  color: white;
+}
+
+/deep/ .el-descriptions-item__content{
+  color: white;
+}
+
+/deep/ .el-descriptions__title{
+  color: #c1c1c1;
+}
+
+/deep/ .el-descriptions-item__content.activ{
+  color: rgb(0, 0, 0);
+}
+
+/deep/ .el-descriptions__title.activ{
+  color: #c1c1c1;
+}
+
+/deep/ .el-descriptions__body .el-descriptions__table .el-descriptions-item__cell{
+  border: 1px solid #5c5c5c;
+}
+
+/deep/ .el-descriptions :not(.is-bordered) .el-descriptions-item__cell {
+  border: none !important;
+}
+
+/deep/ .el-descriptions-item__container .el-descriptions-item__label.activ {
+  color: #000 !important;
+}
+
+/deep/ .el-descriptions__title.activ{
+  color: #5c5c5c;
+}
+
+/deep/ .el-descriptions-item__container .el-descriptions-item__content.activ{
+  color: #000;
+}
+
+/deep/ #tableContainer {
+  min-height: 32vh;
+}
+
+/deep/ .el-table__empty-text {
+    line-height: 329px;
+    font-size: 16px;
+}
 </style>
