@@ -10,13 +10,25 @@
 // import Center from './components/Center.vue'
 // import OrderList from './components/OrderList.vue'
 import OrderList2 from './components/OrderList2.vue'
+import { mapActions } from 'vuex'
+
 // import sideNav from './components/sideNav.vue'
 export default {
   name: 'App',
+  },
   components: {
     OrderList2,
     // sideNav,
     //OrderList
+  },
+  methods:{
+    ...mapActions['languageSet']
+  },
+  mounted(){
+    this.$store.dispatch('languageSet')
+  },
+  created(){
+    this.$store.dispatch('languageSet')
   }
 }
 </script>

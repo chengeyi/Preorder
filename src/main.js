@@ -5,7 +5,7 @@ import App from './App.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-//引入element
+// 引入element
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'element-ui/lib/theme-chalk/display.css'
@@ -16,21 +16,24 @@ locale.el.pagination = {
   pagesize: '',
   total: `{total}`,
   pageClassifier: '頁',
-  };
+};
+
+// 引入Vuex
+import store from './store';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 //import locale from './assets/locale/cn'; // 引入自己的
-//引入Vuex
-import store from './store/index'
+
 //引入moment
 import Moment from 'moment'
 
 Vue.prototype.$moment = Moment;
 Vue.config.productionTip = false
 Vue.use(ElementUI, { locale });
+Vue.use(store);
 Vue.use(VueAxios, axios)
 Vue.component(CollapseTransition.name, CollapseTransition)
 

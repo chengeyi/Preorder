@@ -50,7 +50,6 @@
             {{langData.wSearchTime}}: {{searchTime}}
           </span>
           <span>
-            
             {{langData.wList}}: {{dataLength}} {{langData.wStroke}}
           </span>
         </div>
@@ -114,7 +113,7 @@
                 </el-descriptions>
               </template>
             </el-table-column>
-            <el-table-column sortable label="訂單編號" prop="orderNumber" align="center" v-if="showColumn.orderNumber">
+            <el-table-column sortable :label="langData.wOrderNumner" prop="orderNumber" align="center" v-if="showColumn.orderNumber">
               <template slot-scope="scope">
               <el-popover popper-class="popoverStyle" trigger="hover" placement="right-start" :ref="'popover' + scope.row.id" >
                 <p>銀行端交易序號:<span class="popoverSpanStyle">{{ scope.row.txnSeqno }}</span></p>
@@ -128,8 +127,8 @@
               </el-popover>
             </template>
             </el-table-column>
-            <el-table-column sortable label="商店代號" prop="storeId" align="center" v-if="showColumn.storeId"></el-table-column>
-            <el-table-column sortable label="執行結果說明" prop="rtnMsg" align="center" v-if="showColumn.rtnMsg">
+            <el-table-column sortable :label="langData.wStoreNumner" prop="storeId" align="center" v-if="showColumn.storeId"></el-table-column>
+            <el-table-column sortable :label="langData.wOrderStatus"  prop="rtnMsg" align="center" v-if="showColumn.rtnMsg">
               <template slot-scope="scope">
                 <el-tag effect="dark" style="width: 110px;"
                   :type="scope.row.txnStatus === '2' ? 'success' : scope.row.txnStatus === '3' ? 'danger' : 'primary'"
@@ -141,10 +140,10 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column sortable label="付款方式" prop="payType" align="center" v-if="showColumn.payType"></el-table-column>
-            <el-table-column sortable label="建立日期" prop="crtDate" align="center" v-if="showColumn.crtDate"></el-table-column>
-            <el-table-column sortable label="交易日期" prop="txnDate" align="center" v-if="showColumn.acctDate"> </el-table-column>
-            <el-table-column sortable label="訂單金額" prop="txnAmt" align="center" v-if="showColumn.txnAmt"> </el-table-column>
+            <el-table-column sortable :label="langData.wPayMethod" prop="payType" align="center" v-if="showColumn.payType"></el-table-column>
+            <el-table-column sortable :label="langData.wCreateDate" prop="crtDate" align="center" v-if="showColumn.crtDate"></el-table-column>
+            <el-table-column sortable :label="langData.wTradeDate" prop="txnDate" align="center" v-if="showColumn.acctDate"> </el-table-column>
+            <el-table-column sortable :label="langData.wTradeAmount" prop="txnAmt" align="center" v-if="showColumn.txnAmt"> </el-table-column>
           </el-table-column>
         </el-table>
         <div v-for="item in data" :key="item.orderNumber" class="listContainer web-hide">
@@ -187,33 +186,6 @@
       </el-card>
 
     </div>
-
-    <!-- <div v-for="item in data" :key="item.orderNumber" class="listContainer web-hide">
-      <div class="itemContainer"
-        :class="item.rtnMsg === '交易成功' ? 'success' : item.rtnMsg == '交易失敗' ? 'danger' : 'inProcess'"
-        @click="handlerItemBox(item)">
-        <div>
-          <img class="statusImg"
-            :src="item.rtnMsg === '交易成功' ? successImgUrl : item.rtnMsg === '交易失敗' ? falseImgUrl : inProcessImgUrl">
-        </div>
-        <div>
-          <h4>交易日期: {{ item.acctDate }}</h4>
-          <h5>訂單編號: {{ item.orderNumber }}</h5>
-          <h5>交易類型: {{ item.txnType }}</h5>
-          <h5>付款方式: {{ item.payType }}</h5>
-          <span v-if="item.isShow">
-            <h5>付款人帳號/卡號: {{ item.txnAccNO }}</h5>
-            <h5>銀行端交易序號: {{ item.txnSeqno }}</h5>
-            <h5>交易時間: {{ item.txnTime }}</h5>
-            <h5>訂單金額: {{ item.txnAmt }}</h5>
-            <h5>交易幣別碼: {{ item.txnCurrency }}</h5>
-            <h5>載具顯碼 id: {{ item.carrierId1 }}</h5>
-            <h5>執行結果說明: {{ item.rtnMsg }}</h5>
-          </span>
-        </div>
-      </div>
-    </div> -->
-
 
     <!-- 顯示欄位設定跳窗 -->
     <el-dialog title="自定義設定" :visible.sync="setRowdialog">
@@ -287,9 +259,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'vuex'
 import topNav from './topNav.vue';
-import { ch } from '../assets/lang/ch';
+import locale from 'element-ui/lib/locale/lang/zh-TW'
 
 export default {
   components:{
@@ -734,18 +706,14 @@ export default {
       progressInfo: [],
       // 查詢時間
       searchTime: '',
-      // 語言選擇
-      lang: 'ch',
-      langData: ch,
     };
   },
   mounted() {
-    this.getData()
+    this.getData();
     //localStorage.clear();
 
     //判斷光暗模式
-    this.showColumn = JSON.parse(localStorage.showColumn || '')
-    
+    // this.showColumn = JSON.parse(localStorage.showColumn || '')
     if(localStorage.sun == 'true'){
       this.sun = true;
       this.moon = false;
@@ -762,14 +730,17 @@ export default {
 
     //背景圖
     let imgs = document.querySelector('.el-card__body');
-    console.log(imgs)
     imgs.style.backgroundImage=`url(${require(`@/assets/${localStorage.backgroundImg}`)})`;
     setTimeout(()=>{
       this.changeBackImg(localStorage.backgroundImg)
     },0)
   },
   computed: {
-    ...mapState(['examination']),
+    ...mapState([
+      'examination',
+      // 語言資料
+      'langData'
+    ]),
     dataLength() {
       return this.data.length
     },
@@ -901,29 +872,29 @@ export default {
           lightOrDark.classList.add('activ');
           changeBackImgBtn.classList.add('activ');
         }
-  
+
         let td = document.querySelectorAll('.el-table td')
         for(let i = 0; i<td.length ;i++){
           td[i].classList.add('activ');
         }
-  
+
         let elTableTh = document.querySelectorAll('.el-table--border th')
         for(let i = 0; i<elTableTh.length ;i++){
           elTableTh[i].classList.add('activ');
         }
-  
+
         let ascending = document.querySelectorAll('.ascending')
         let descending = document.querySelectorAll('.descending')
         for(let i = 0; i<ascending.length ;i++){
           ascending[i].classList.add('activ');
           descending[i].classList.add('activ');
         }
-  
+
         let arrowRight = document.querySelectorAll('.el-icon-arrow-right') 
         for(let i = 0; i<arrowRight.length ;i++){
           arrowRight[i].classList.add('activ');
         }
-  
+
         let tdFont = document.querySelectorAll('.el-table__body-wrapper .el-table__cell .cell') 
         for(let i = 0; i<tdFont.length ;i++){
           tdFont[i].classList.add('activ');
@@ -1017,24 +988,22 @@ export default {
       }).then((res) => {
         if(res.data.responseBody.rtnMsg != '查無資料'){
           // this.showColumn = JSON.parse(localStorage.showColumn)
-          // let b =[]
-          // for(let i = 0; i<a.length; i++){
-          //   b.push(a[i].inQueryVo)
-          // }
-          // console.log(b)
-          // for(let i = 0; i<b.length; i++){
-          //   for(let j = 0; j<b[i].length; j++){
+          let orgDAta = res.data.responseBody.queryVo
 
-          //   }
-          // }
-          // res.data.responseBody.queryVo.forEach(item=>{
-          //   item.inQueryVo.forEach(data=>{
-          //     console.log(data)
-          //     this.$set(data, "isShow", false)
-          //   })
-          // })
-          res.data.responseBody.queryVo[3].inQueryVo.forEach(item => {
-            console.log(item)
+          let insideArr = []
+          let outsideArr = []
+          for(let i = 0; i<orgDAta.length; i++){
+            insideArr.push(orgDAta[i].inQueryVo)
+          }
+
+          for(let i = 0; i<insideArr.length; i++){
+            for(let j = 0; j<insideArr[i].length; j++){
+              outsideArr.push(insideArr[i][j])
+            }
+          }
+          this.data = outsideArr
+          //this.data = res.data.responseBody.queryVo[3].inQueryVo
+          this.data.forEach(item => {
             this.$set(item, "isShow", false)
           });
           this.data.forEach((item) => {
@@ -1047,7 +1016,6 @@ export default {
           this.data = []
           this.loading = false
         }
-        
       }).finally(()=>{
         let now = new Date()
         this.searchTime = now.toLocaleString();
@@ -1085,7 +1053,7 @@ export default {
           for(let i = 0; i < tdFon.length; i++){
             tdFon[i].classList.add('activ');
           }
-  
+
           let arrow = document.querySelectorAll('.el-icon-arrow-right')
           for(let i = 0; i < arrow.length; i++){
             arrow[i].classList.add('activ');
@@ -1098,6 +1066,27 @@ export default {
     handleCurrentChange(val) {
       this.page = val;
     },
+    languageGet(){
+      switch (localStorage.getItem('lang')) {
+      case 'en':
+        locale.el.pagination = {
+          goto: 'To',
+          pagesize: '',
+          total: `{total}`,
+          pageClassifier: 'Page',
+        };
+        break;
+      case 'jp':
+        break;
+      default:
+        locale.el.pagination = {
+          goto: '跳至',
+          pagesize: '',
+          total: `{total}`,
+          pageClassifier: '頁',
+        };
+      }
+    }
   },
   created() {
     this.getData()

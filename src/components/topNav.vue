@@ -18,12 +18,17 @@
                         <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
                     </b-nav-form> -->
 
-                    <b-nav-item-dropdown :text="langData.wLang" right>
-                        <b-dropdown-item>CH</b-dropdown-item>
-                        <b-dropdown-item>EN</b-dropdown-item>
-                        <b-dropdown-item>JP</b-dropdown-item>
+                    <b-nav-item-dropdown :text="langData.wLang">
+                        <b-dropdown-item @click="
+                            languageChange('ch'),
+                            updateTableWord('ch')
+                        ">CH</b-dropdown-item>
+                        <b-dropdown-item @click="
+                            languageChange('en'),
+                            updateTableWord('en')
+                        ">EN</b-dropdown-item>
+                        <!-- <b-dropdown-item>JP</b-dropdown-item> -->
                     </b-nav-item-dropdown>
-
                     <!-- Using 'button-content' slot -->
                     <!-- <b-nav-item-dropdown right>
                         <template v-slot:button-content>
@@ -39,17 +44,47 @@
 </template>
 
 <script>
-import { ch } from '../assets/lang/ch';
+import { mapActions, mapState } from 'vuex'
+import locale from 'element-ui/lib/locale/lang/zh-TW'
 
 export default {
     data(){
         return{
-            langData: ch,
         }
     },
+    mounted(){
+    },
     methods: {
+        ...mapActions([
+            'languageChange'
+        ]),
+        updateTableWord(lang){
+            switch(lang){
+                case 'en':
+                    locale.el.pagination = {
+                        goto: 'To',
+                        pagesize: '',
+                        total: `{total}`,
+                        pageClassifier: 'Page',
+                    };
+                    break;
+                default:
+                    locale.el.pagination = {
+                        goto: '跳至',
+                        pagesize: '',
+                        total: `{total}`,
+                        pageClassifier: '頁',
+                    };
+                    break;
+            }
+        },
+    },
+    computed:{
+        ...mapState([
+            'langData'
+        ])
+    },
 
-    }
 }
 </script>
 
