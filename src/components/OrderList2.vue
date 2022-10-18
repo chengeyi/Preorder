@@ -131,12 +131,15 @@
             <el-table-column sortable :label="langData.wOrderStatus"  prop="rtnMsg" align="center" v-if="showColumn.rtnMsg">
               <template slot-scope="scope">
                 <el-tag effect="dark" style="width: 110px;"
-                  :type="scope.row.txnStatus === '2' ? 'success' : scope.row.txnStatus === '3' ? 'danger' : 'primary'"
+                  :type="scope.row.txnStatus === '2' ? 'success' : scope.row.txnStatus === '0' ? 'danger' : 'primary'"
                   disable-transitions>
                   <span
-                    :class="scope.row.txnStatus === '1' ? 'el-icon-check' : scope.row.txnStatus === '3' ? 'el-icon-close' : 'el-icon-loading'"></span>
+                    :class="scope.row.txnStatus === '1' ? 'el-icon-check' : scope.row.txnStatus === '0' ? 'el-icon-close' : 'el-icon-loading'">
+                  </span>&nbsp;
                   <!-- {{ scope.row.rtnMsg }} -->
-                  交易成功
+                  <span v-if="scope.row.txnStatus === '1'">交易成功</span>
+                  <span v-if="scope.row.txnStatus === '2'">交易進行中</span>
+                  <span v-if="scope.row.txnStatus === '0'">交易失敗</span>
                 </el-tag>
               </template>
             </el-table-column>
@@ -269,6 +272,9 @@ export default {
   },
   data() {
     return {
+      status:[
+
+      ],
       color:'#8b8e93',
       changeColor:'rgb(139, 142, 147)',
       sun:false,
@@ -986,6 +992,7 @@ export default {
         },
         data: sendData
       }).then((res) => {
+        console.log(res)
         if(res.data.responseBody.rtnMsg != '查無資料'){
           // this.showColumn = JSON.parse(localStorage.showColumn)
           let orgDAta = res.data.responseBody.queryVo
