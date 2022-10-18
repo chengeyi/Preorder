@@ -241,7 +241,7 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="純色">
+          <el-tab-pane :label="langData.wColor">
             <div class="imgContainer" >
               <div class="imgWarp" v-for="img in backgroundImg2" :key="img.id">
                 <img :src="img.img" alt="" @click="changeBackImg(img.imgUrl)">
