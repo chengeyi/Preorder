@@ -27,6 +27,9 @@ export default {
     this.$store.dispatch('languageSet')
   },
   created(){
+    if(!localStorage.getItem('lang')){
+      localStorage.setItem('lang','ch');
+    }
     this.$store.dispatch('languageSet')
   }
 }

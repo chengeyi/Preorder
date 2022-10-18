@@ -1018,7 +1018,7 @@ export default {
         }
       }).finally(()=>{
         let now = new Date()
-        this.searchTime = now.toLocaleString();
+        this.searchTime = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
       });
       //this.loading = false
     },
@@ -1103,8 +1103,8 @@ export default {
   }
 };
 </script>
- 
-<style lang="less" scoped>
+
+<style lang="scss" scoped>
 @import url("https://ico.z01.com/zico.css");
 /deep/ .el-tabs__item{
   font-size: 16px;
