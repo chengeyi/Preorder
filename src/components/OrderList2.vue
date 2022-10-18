@@ -137,9 +137,7 @@
                     :class="scope.row.txnStatus === '1' ? 'el-icon-check' : scope.row.txnStatus === '0' ? 'el-icon-close' : 'el-icon-loading'">
                   </span>&nbsp;
                   <!-- {{ scope.row.rtnMsg }} -->
-                  <span v-if="scope.row.txnStatus === '1'">交易成功</span>
-                  <span v-if="scope.row.txnStatus === '2'">交易進行中</span>
-                  <span v-if="scope.row.txnStatus === '0'">交易失敗</span>
+                  <span>{{langData.wTradeStatue[scope.row.txnStatus]}}</span>
                 </el-tag>
               </template>
             </el-table-column>
@@ -272,9 +270,6 @@ export default {
   },
   data() {
     return {
-      status:[
-
-      ],
       color:'#8b8e93',
       changeColor:'rgb(139, 142, 147)',
       sun:false,
