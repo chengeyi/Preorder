@@ -24,4 +24,6 @@ export const ch = {
     wPayerAccount:"付款人帳號/卡號",
     wPage:"頁",
     wTo:"跳至",
+    wColor:"純色",
+    wTradeStatue:["交易失敗","交易成功","交易進行中"],
 }

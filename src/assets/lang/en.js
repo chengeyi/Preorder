@@ -6,7 +6,7 @@ export const en = {
     wSearch:"Search",
     wResult:"Result",
     wSearchTime:"SearchTime",
-    wList:"Row",
+    wList:"Rows",
     wStroke:"Row",
     wLoading:"Loading",
     wOrderNumner:"OrderNo.",
@@ -24,4 +24,6 @@ export const en = {
     wPayerAccount:"PayerAccount",
     wPage:"Page",
     wTo:"To",
+    wColor:"Color",
+    wTradeStatue:["Error","Success","trading"],
 }
