@@ -74,9 +74,9 @@
             <el-table-column type="expand" @click="toogleExpandCargo(scope.row)">
               <template slot-scope="props">
                 <el-descriptions :title="langData.wOrderDetail" class="mb-3 ml-5 mr-5 descriptions">
-                  <el-descriptions-item label="銀行端交易序號">
+                  <!-- <el-descriptions-item label="銀行端交易序號">
                     {{ props.row.txnSeqno }}
-                  </el-descriptions-item>
+                  </el-descriptions-item> -->
                   <el-descriptions-item label="交易時間">
                     {{ props.row.txnTime }}
                   </el-descriptions-item>
@@ -116,7 +116,7 @@
             <el-table-column sortable :label="langData.wOrderNumner" prop="orderNumber" align="center" v-if="showColumn.orderNumber">
               <template slot-scope="scope">
               <el-popover popper-class="popoverStyle" trigger="hover" placement="right-start" :ref="'popover' + scope.row.id" >
-                <p>銀行端交易序號:<span class="popoverSpanStyle">{{ scope.row.txnSeqno }}</span></p>
+                <!-- <p>銀行端交易序號:<span class="popoverSpanStyle">{{ scope.row.txnSeqno }}</span></p> -->
                 <p>交易時間: <span class="popoverSpanStyle">{{ scope.row.txnTime }}</span></p>
                 <p>交易幣別: <span class="popoverSpanStyle">{{ scope.row.txnCurrency }}</span></p>
                 <p>付款人帳號/卡號: <span class="popoverSpanStyle">{{ scope.row.txnAccNO }}</span></p>
@@ -126,7 +126,7 @@
                 <p v-if="!showColumn.rtnMsg">執行結果說明: <span class="popoverSpanStyle">{{ scope.row.txnStatus }}</span></p>
                 <p v-if="!showColumn.payType">付款方式: <span class="popoverSpanStyle">{{ scope.row.payType }}</span></p>
                 <p v-if="!showColumn.crtDate">建立日期: <span class="popoverSpanStyle">{{ scope.row.crtDate }}</span></p>
-                <p v-if="!showColumn.txnDate">交易日期: <span class="popoverSpanStyle">{{ scope.row.acctDate }}</span></p>
+                <p v-if="!showColumn.acctDate">交易日期: <span class="popoverSpanStyle">{{ scope.row.acctDate }}</span></p>
                 <p v-if="!showColumn.txnAmt">交易金額: <span class="popoverSpanStyle">{{ scope.row.txnAmt }}</span></p>
                 <div slot="reference" class="name-wrapper">
                   {{ scope.row.orderNumber }}
@@ -169,7 +169,7 @@
               <h5>付款方式: {{ item.payType }}</h5>
               <span v-if="item.isShow">
                 <h5>付款人帳號/卡號: {{ item.txnAccNO }}</h5>
-                <h5>銀行端交易序號: {{ item.txnSeqno }}</h5>
+                <!-- <h5>銀行端交易序號: {{ item.txnSeqno }}</h5> -->
                 <h5>交易時間: {{ item.txnTime }}</h5>
                 <h5>訂單金額: {{ item.txnAmt }}</h5>
                 <h5>交易幣別碼: {{ item.txnCurrency }}</h5>
@@ -794,21 +794,21 @@ export default {
       }).then((res) => {
         console.log(res)
         if(res.data.responseBody.rtnMsg != '查無資料'){
-          // this.showColumn = JSON.parse(localStorage.showColumn)
-          //let orgDAta = res.data.responseBody.queryVo
+          this.showColumn = JSON.parse(localStorage.showColumn)
+          let orgDAta = res.data.responseBody.queryVo
 
-          // let insideArr = []
-          // let outsideArr = []
-          // for(let i = 0; i<orgDAta.length; i++){
-          //   insideArr.push(orgDAta[i].inQueryVo)
-          // }
+          let insideArr = []
+          let outsideArr = []
+          for(let i = 0; i<orgDAta.length; i++){
+            insideArr.push(orgDAta[i].inQueryVo)
+          }
 
-          // for(let i = 0; i<insideArr.length; i++){
-          //   for(let j = 0; j<insideArr[i].length; j++){
-          //     outsideArr.push(insideArr[i][j])
-          //   }
-          // }
-          // this.data = outsideArr
+          for(let i = 0; i<insideArr.length; i++){
+            for(let j = 0; j<insideArr[i].length; j++){
+              outsideArr.push(insideArr[i][j])
+            }
+          }
+          this.data = outsideArr
 
           //this.data = res.data.responseBody.queryVo[3].inQueryVo
           this.data.forEach(item => {

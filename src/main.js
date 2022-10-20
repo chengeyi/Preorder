@@ -34,6 +34,11 @@ Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 //import locale from './assets/locale/cn'; // 引入自己的
 
+// 引入sweetalert2
+import Swal from 'sweetalert2'
+
+window.Swal = Swal;
+
 //引入moment
 import Moment from 'moment'
 
