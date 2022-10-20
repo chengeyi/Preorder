@@ -18,12 +18,20 @@ export const ch = {
     wTradeAmount:"交易金額",
     wOrderDetail:"訂單明細",
     wOrderOfPage:"每頁筆數",
-    wTradeID:"銀行端交易序號",
+    wBankTradeNumber:"銀行端交易序號",
     wTradeTime:"交易時間",
     wTradeCurrency :"交易幣別",
     wPayerAccount:"付款人帳號/卡號",
+    wDeviceNumber: "載具顯碼 id",
     wPage:"頁",
     wTo:"跳至",
     wColor:"純色",
     wTradeStatue:["交易失敗","交易成功","交易進行中"],
+    oPayMethod:{
+        "C": "信用卡",
+        "D": "金融卡",
+    },
+    oTradeCurrency:{
+        "901": "台幣"
+    }
 }

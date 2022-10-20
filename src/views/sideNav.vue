@@ -2,20 +2,20 @@
 
     <div class="containe">
         <div class="logging animate__animated animate__backInDown">
-            <h3 class='font animate__animated animate__backInDown'>Welcome To Nice Bank</h3>
+            <h3 class='font '>Welcome To Nice Bank</h3>
             <el-input v-model="loginForm.username" type="text" placeholder="Username" data-space-bottom="0.5rem"
-                class="input animate__animated animate__backInDown" />
+                class="input " />
             <br>
             <div class="passwordBox">
-                <!-- <button @click="handlerEye" v-if="eyeOpen" class="zi zi_eye animate__animated animate__backInDown">
+                <!-- <button @click="handlerEye" v-if="eyeOpen" class="zi zi_eye ">
                 </button>
-                <button @click="handlerEye" v-if="eyeClose" class="zi zi_eyeslash animate__animated animate__backInDown">
+                <button @click="handlerEye" v-if="eyeClose" class="zi zi_eyeslash ">
                 </button> -->
                 <el-input v-model="loginForm.password" type="password" placeholder="Password" data-space-bottom="0.5rem"
-                    class="input animate__animated animate__backInDown" />
+                    class="input " />
             </div>
             <br>
-            <el-button type="primary" @click="handleLogin" class="button animate__animated animate__backInDown">
+            <el-button type="primary" @click="handleLogin" class="button ">
                 Login
             </el-button>
             <br>

@@ -77,16 +77,19 @@
                   <!-- <el-descriptions-item label="銀行端交易序號">
                     {{ props.row.txnSeqno }}
                   </el-descriptions-item> -->
-                  <el-descriptions-item label="交易時間">
+                  <!-- <el-descriptions-item :label="langData.wBankTradeNumber">
+                    {{ props.row.txnSeqno }}
+                  </el-descriptions-item> -->
+                  <el-descriptions-item :label="langData.wTradeTime">
                     {{ props.row.txnTime }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="交易幣別">
-                    {{ props.row.txnCurrency }}
+                  <el-descriptions-item :label="langData.wTradeCurrency">
+                    {{ langData.oTradeCurrency[props.row.txnCurrency] }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="付款人帳號/卡號">
+                  <el-descriptions-item :label="langData.wPayerAccount">
                     {{ props.row.txnAccNO }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="載具顯碼 id">
+                  <el-descriptions-item :label="langData.wDeviceNumber">
                     {{ props.row.carrierId1 }}
                   </el-descriptions-item>
                   <el-descriptions-item :label="langData.wOrderNumner" v-if="!showColumn.orderNumber">
@@ -117,7 +120,7 @@
               <template slot-scope="scope">
               <el-popover popper-class="popoverStyle" trigger="hover" placement="right-start" :ref="'popover' + scope.row.id" >
                 <!-- <p>銀行端交易序號:<span class="popoverSpanStyle">{{ scope.row.txnSeqno }}</span></p> -->
-                <p>交易時間: <span class="popoverSpanStyle">{{ scope.row.txnTime }}</span></p>
+                <!-- <p>交易時間: <span class="popoverSpanStyle">{{ scope.row.txnTime }}</span></p>
                 <p>交易幣別: <span class="popoverSpanStyle">{{ scope.row.txnCurrency }}</span></p>
                 <p>付款人帳號/卡號: <span class="popoverSpanStyle">{{ scope.row.txnAccNO }}</span></p>
                 <p>載具顯碼 id: <span class="popoverSpanStyle">{{ scope.row.carrierId1 }}</span></p>
@@ -127,7 +130,19 @@
                 <p v-if="!showColumn.payType">付款方式: <span class="popoverSpanStyle">{{ scope.row.payType }}</span></p>
                 <p v-if="!showColumn.crtDate">建立日期: <span class="popoverSpanStyle">{{ scope.row.crtDate }}</span></p>
                 <p v-if="!showColumn.acctDate">交易日期: <span class="popoverSpanStyle">{{ scope.row.acctDate }}</span></p>
-                <p v-if="!showColumn.txnAmt">交易金額: <span class="popoverSpanStyle">{{ scope.row.txnAmt }}</span></p>
+                <p v-if="!showColumn.txnAmt">交易金額: <span class="popoverSpanStyle">{{ scope.row.txnAmt }}</span></p> -->
+                <p>{{langData.wOrderNumner}}:<span class="popoverSpanStyle">{{ scope.row.txnSeqno }}</span></p>
+                <p>{{langData.wTradeTime}}: <span class="popoverSpanStyle">{{ scope.row.txnTime }}</span></p>
+                <p>{{langData.wTradeCurrency}}: <span class="popoverSpanStyle">{{ langData.oTradeCurrency[scope.row.txnCurrency] }}</span></p>
+                <p>{{langData.wPayerAccount}}: <span class="popoverSpanStyle">{{ scope.row.txnAccNO }}</span></p>
+                <p>{{langData.wDeviceNumber}}: <span class="popoverSpanStyle">{{ scope.row.carrierId1 }}</span></p>
+                <p v-if="!showColumn.orderNumber">{{langData.wOrderNumner}}: <span class="popoverSpanStyle">{{ scope.row.orderNumber }}</span></p>
+                <p v-if="!showColumn.storeId">{{langData.wStoreNumner}}: <span class="popoverSpanStyle">{{ scope.row.storeId }}</span></p>
+                <p v-if="!showColumn.rtnMsg">{{langData.wOrderStatus}}: <span class="popoverSpanStyle">{{ scope.row.txnStatus }}</span></p>
+                <p v-if="!showColumn.payType">{{langData.wPayMethod}}: <span class="popoverSpanStyle">{{ scope.row.payType }}</span></p>
+                <p v-if="!showColumn.crtDate">{{langData.wCreateDate}}: <span class="popoverSpanStyle">{{ scope.row.crtDate }}</span></p>
+                <p v-if="!showColumn.acctDate">{{langData.wTradeDate}}: <span class="popoverSpanStyle">{{ scope.row.acctDate }}</span></p>
+                <p v-if="!showColumn.txnAmt">{{langData.wTradeAmount}}: <span class="popoverSpanStyle">{{ scope.row.txnAmt }}</span></p>
                 <div slot="reference" class="name-wrapper">
                   {{ scope.row.orderNumber }}
                 </div>
@@ -359,125 +374,125 @@ export default {
       inqTxnTimeStart: '',
       inqTxnTimeEnd: '',
       data: [
-      {
-        "storeId": "test003",
-        "orderNumber": "1f041die-d19c-47fe-a7b8-d303b2d12c2d",
-        "txnStatus": "2",
-        "txnAmt": 2000,
-        "crtDate": "20220901",
-        "acctDate": "20220910",
-        "payType": "C",
-        "txnDate": "20220914",
-        "txnType": "P",
-        "txnAccNO": "432188******3389",
-        "rtnMsg": "交易成功",
-        "carrierId1": "",
-        "endpointCode": "",
-        "txnCurrency": 901,
-        "txnTime": "175628"
-    },
-    {
-        "storeId": "test777",
-        "orderNumber": "1f041die-d19c-47fl-a7b8-d303b2d12c2d",
-        "txnStatus": "1",
-        "txnAmt": 2000,
-        "crtDate": "20220902",
-        "acctDate": "20220911",
-        "payType": "C",
-        "txnDate": "20220914",
-        "txnType": "P",
-        "txnAccNO": "432188******3389",
-        "rtnMsg": "交易成功",
-        "carrierId1": "",
-        "endpointCode": "",
-        "txnCurrency": 901,
-        "txnTime": "175628"
-    },
-    {
-        "storeId": "test002",
-        "orderNumber": "1f041die-d19f-47fe-a7b8-d303b2d12c2d",
-        "txnStatus": "1",
-        "txnAmt": 4000,
-        "crtDate": "20220908",
-        "acctDate": "20220918",
-        "payType": "C",
-        "txnDate": "20220914",
-        "txnType": "P",
-        "txnAccNO": "432188******3389",
-        "rtnMsg": "交易成功",
-        "carrierId1": "",
-        "endpointCode": "",
-        "txnCurrency": 901,
-        "txnTime": "175628"
-    },
-    {
-        "storeId": "test227",
-        "orderNumber": "1f041die-d20c-47fl-a7b8-d303b2d12c2d",
-        "txnStatus": "1",
-        "txnAmt": 6400,
-        "crtDate": "20220910",
-        "acctDate": "20220930",
-        "payType": "C",
-        "txnDate": "20220914",
-        "txnType": "P",
-        "txnAccNO": "432188******3389",
-        "rtnMsg": "交易成功",
-        "carrierId1": "",
-        "endpointCode": "",
-        "txnCurrency": 901,
-        "txnTime": "175628"
-    },
-    {
-        "storeId": "test220",
-        "orderNumber": "1f041die-d20c-47fl-a7b8-d303b2d1a32d",
-        "txnStatus": "1",
-        "txnAmt": 1000,
-        "crtDate": "20220914",
-        "acctDate": "20220904",
-        "payType": "C",
-        "txnDate": "20220914",
-        "txnType": "P",
-        "txnAccNO": "432188******3389",
-        "rtnMsg": "交易成功",
-        "carrierId1": "",
-        "endpointCode": "",
-        "txnCurrency": 901,
-        "txnTime": "175628"
-    },
-    {
-        "storeId": "test444",
-        "orderNumber": "1f041die-d20c-47fl-a7b8-e303b2d1a32d",
-        "txnStatus": "0",
-        "txnAmt": 4444,
-        "crtDate": "20221004",
-        "acctDate": "20221014",
-        "payType": "C",
-        "txnDate": "20220914",
-        "txnType": "P",
-        "txnAccNO": "432188******3389",
-        "rtnMsg": "交易成功",
-        "carrierId1": "",
-        "endpointCode": "",
-        "txnCurrency": 901,
-        "txnTime": "175628"
-    },
-    {
-        "storeId": "test7545",
-        "orderNumber": "if041die-d20c-47fl-a7b8-e303b2d1a32d",
-        "txnStatus": "1",
-        "txnAmt": 7800,
-        "crtDate": "20221001",
-        "acctDate": "20221004",
-        "payType": "C",
-        "txnDate": "20220914",
-        "txnType": "P",
-        "txnAccNO": "432188******3389",
-        "rtnMsg": "交易成功",
-        "carrierId1": "",
-        "endpointCode": "",
-        "txnCurrency": 901,
-        "txnTime": "175628"
-    }
+    //   {
+    //     "storeId": "test003",
+    //     "orderNumber": "1f041die-d19c-47fe-a7b8-d303b2d12c2d",
+    //     "txnStatus": "2",
+    //     "txnAmt": 2000,
+    //     "crtDate": "20220901",
+    //     "acctDate": "20220910",
+    //     "payType": "C",
+    //     "txnDate": "20220914",
+    //     "txnType": "P",
+    //     "txnAccNO": "432188******3389",
+    //     "rtnMsg": "交易成功",
+    //     "carrierId1": "",
+    //     "endpointCode": "",
+    //     "txnCurrency": 901,
+    //     "txnTime": "175628"
+    // },
+    // {
+    //     "storeId": "test777",
+    //     "orderNumber": "1f041die-d19c-47fl-a7b8-d303b2d12c2d",
+    //     "txnStatus": "1",
+    //     "txnAmt": 2000,
+    //     "crtDate": "20220902",
+    //     "acctDate": "20220911",
+    //     "payType": "C",
+    //     "txnDate": "20220914",
+    //     "txnType": "P",
+    //     "txnAccNO": "432188******3389",
+    //     "rtnMsg": "交易成功",
+    //     "carrierId1": "",
+    //     "endpointCode": "",
+    //     "txnCurrency": 901,
+    //     "txnTime": "175628"
+    // },
+    // {
+    //     "storeId": "test002",
+    //     "orderNumber": "1f041die-d19f-47fe-a7b8-d303b2d12c2d",
+    //     "txnStatus": "1",
+    //     "txnAmt": 4000,
+    //     "crtDate": "20220908",
+    //     "acctDate": "20220918",
+    //     "payType": "C",
+    //     "txnDate": "20220914",
+    //     "txnType": "P",
+    //     "txnAccNO": "432188******3389",
+    //     "rtnMsg": "交易成功",
+    //     "carrierId1": "",
+    //     "endpointCode": "",
+    //     "txnCurrency": 901,
+    //     "txnTime": "175628"
+    // },
+    // {
+    //     "storeId": "test227",
+    //     "orderNumber": "1f041die-d20c-47fl-a7b8-d303b2d12c2d",
+    //     "txnStatus": "1",
+    //     "txnAmt": 6400,
+    //     "crtDate": "20220910",
+    //     "acctDate": "20220930",
+    //     "payType": "C",
+    //     "txnDate": "20220914",
+    //     "txnType": "P",
+    //     "txnAccNO": "432188******3389",
+    //     "rtnMsg": "交易成功",
+    //     "carrierId1": "",
+    //     "endpointCode": "",
+    //     "txnCurrency": 901,
+    //     "txnTime": "175628"
+    // },
+    // {
+    //     "storeId": "test220",
+    //     "orderNumber": "1f041die-d20c-47fl-a7b8-d303b2d1a32d",
+    //     "txnStatus": "1",
+    //     "txnAmt": 1000,
+    //     "crtDate": "20220914",
+    //     "acctDate": "20220904",
+    //     "payType": "C",
+    //     "txnDate": "20220914",
+    //     "txnType": "P",
+    //     "txnAccNO": "432188******3389",
+    //     "rtnMsg": "交易成功",
+    //     "carrierId1": "",
+    //     "endpointCode": "",
+    //     "txnCurrency": 901,
+    //     "txnTime": "175628"
+    // },
+    // {
+    //     "storeId": "test444",
+    //     "orderNumber": "1f041die-d20c-47fl-a7b8-e303b2d1a32d",
+    //     "txnStatus": "0",
+    //     "txnAmt": 4444,
+    //     "crtDate": "20221004",
+    //     "acctDate": "20221014",
+    //     "payType": "C",
+    //     "txnDate": "20220914",
+    //     "txnType": "P",
+    //     "txnAccNO": "432188******3389",
+    //     "rtnMsg": "交易成功",
+    //     "carrierId1": "",
+    //     "endpointCode": "",
+    //     "txnCurrency": 901,
+    //     "txnTime": "175628"
+    // },
+    // {
+    //     "storeId": "test7545",
+    //     "orderNumber": "if041die-d20c-47fl-a7b8-e303b2d1a32d",
+    //     "txnStatus": "1",
+    //     "txnAmt": 7800,
+    //     "crtDate": "20221001",
+    //     "acctDate": "20221004",
+    //     "payType": "C",
+    //     "txnDate": "20220914",
+    //     "txnType": "P",
+    //     "txnAccNO": "432188******3389",
+    //     "rtnMsg": "交易成功",
+    //     "carrierId1": "",
+    //     "endpointCode": "",
+    //     "txnCurrency": 901,
+    //     "txnTime": "175628"
+    // }
       ],
       // customColor: '#409eff',
       // cityData,
@@ -514,7 +529,6 @@ export default {
     };
   },
   mounted() {
-    this.getData();
     //localStorage.clear();
 
     //判斷光暗模式
@@ -773,7 +787,6 @@ export default {
       console.log(value);
     },
     getData() {
-      console.log('in')
       // if (this.examination) {
       //   return
       // }
@@ -810,7 +823,6 @@ export default {
           }
           this.data = outsideArr
 
-          //this.data = res.data.responseBody.queryVo[3].inQueryVo
           this.data.forEach(item => {
             this.$set(item, "isShow", false)
           });
