@@ -2,22 +2,23 @@
   <div id="app" class="appContainer">
     <!-- <sideNav id="sideNav"></sideNav> -->
     <!-- <OrderList2 id="OrderList"></OrderList2> -->
-    <OrderList2 id="OrderList"></OrderList2>
+    <!-- <OrderList2 id="OrderList"></OrderList2> -->
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 // import Center from './components/Center.vue'
 // import OrderList from './components/OrderList.vue'
-import OrderList2 from './components/OrderList2.vue'
+// import OrderList2 from './views/OrderList2.vue'
 import { mapActions } from 'vuex'
 
-// import sideNav from './components/sideNav.vue'
+//import sideNav from './views/sideNav.vue'
 export default {
   name: 'App',
   components: {
-    OrderList2,
-    // sideNav,
+    // OrderList2,
+    //sideNav,
     //OrderList
   },
   methods:{
