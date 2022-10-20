@@ -1,9 +1,16 @@
 import Vue from 'vue'
 import App from './App.vue'
 
+//引入 router
+import router from "./router" ;
+
 // 引入Axios
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+
+// 引入Axios
+import animate from "animate.css";
+Vue.use(animate);
 
 // 引入element
 import ElementUI from 'element-ui'
@@ -39,5 +46,6 @@ Vue.component(CollapseTransition.name, CollapseTransition)
 
 new Vue({
   render: h => h(App),
-  store
+  store,
+  router
 }).$mount('#app')
