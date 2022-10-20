@@ -25,6 +25,12 @@ export const en = {
     wDeviceNumber: "Device Number",
     wPage:"Page",
     wTo:"To",
+    wCustomerSetting:"Customer Setting",
+    wTableTitleTextColor:"TableTitleTextColor",
+    wTableFieldTextColor:"TableFieldTextColor",
+    wBackgroundSetting:"Background Setting",
+    wBackground:"Background",
+    wScape:"Scape",
     wColor:"Color",
     wTradeStatue:["Error","Success","trading"],
     oPayMethod:{

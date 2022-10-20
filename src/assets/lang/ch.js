@@ -25,6 +25,12 @@ export const ch = {
     wDeviceNumber: "載具顯碼 id",
     wPage:"頁",
     wTo:"跳至",
+    wCustomerSetting:"自定義設定",
+    wTableTitleTextColor:"表頭文字顏色設定",
+    wTableFieldTextColor:"表格文字顏色設定",
+    wBackgroundSetting:"背景設定",
+    wBackground:"背景",
+    wScape:"風景",
     wColor:"純色",
     wTradeStatue:["交易失敗","交易成功","交易進行中"],
     oPayMethod:{

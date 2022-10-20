@@ -102,7 +102,7 @@
                     {{ props.row.txnStatus }}
                   </el-descriptions-item>
                   <el-descriptions-item :label="langData.wPayMethod" v-if="!showColumn.payType">
-                    {{ props.row.payType }}
+                    {{ langData.oPayMethod[props.row.payType] }}
                   </el-descriptions-item>
                   <el-descriptions-item :label="langData.wCreateDate" v-if="!showColumn.crtDate">
                     {{ props.row.crtDate }}
@@ -163,7 +163,12 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column sortable :label="langData.wPayMethod" prop="payType" align="center" v-if="showColumn.payType"></el-table-column>
+            <el-table-column sortable :label="langData.wPayMethod"  align="center" v-if="showColumn.payType">
+              <template slot-scope="scope">
+                {{langData.oPayMethod[scope.row.payType]}}
+              </template>
+            </el-table-column>
+            <!-- <el-table-column sortable :label="langData.wPayMethod" prop="payType" align="center" v-if="showColumn.payType"></el-table-column> -->
             <el-table-column sortable :label="langData.wCreateDate" prop="crtDate" align="center" v-if="showColumn.crtDate"></el-table-column>
             <el-table-column sortable :label="langData.wTradeDate" prop="txnDate" align="center" v-if="showColumn.acctDate"> </el-table-column>
             <el-table-column sortable :label="langData.wTradeAmount" prop="txnAmt" align="center" v-if="showColumn.txnAmt"> </el-table-column>
@@ -211,25 +216,25 @@
     </div>
 
     <!-- 顯示欄位設定跳窗 -->
-    <el-dialog title="自定義設定" :visible.sync="setRowdialog">
+    <el-dialog :title="langData.wCustomerSetting" :visible.sync="setRowdialog">
       <transition name="fade">
         <div class="setContainer">
           <div class="checkBoxWrap">
-            <el-checkbox class="checkBox" v-model="showColumn.orderNumber" @change="handleCheckChange">訂單編號</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.storeId" @change="handleCheckChange">商店代號</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.rtnMsg" @change="handleCheckChange">執行結果說明</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.payType" @change="handleCheckChange">付款方式</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.crtDate" @change="handleCheckChange">建立日期</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.acctDate" @change="handleCheckChange">交易日期</el-checkbox>
-            <el-checkbox class="checkBox" v-model="showColumn.txnAmt" @change="handleCheckChange">訂單金額</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.orderNumber" @change="handleCheckChange">{{langData.wOrderNumner}}</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.storeId" @change="handleCheckChange">{{langData.wStoreNumner}}</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.rtnMsg" @change="handleCheckChange">{{langData.wOrderStatus}}</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.payType" @change="handleCheckChange">{{langData.wPayMethod}}</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.crtDate" @change="handleCheckChange">{{langData.wCreateDate}}</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.acctDate" @change="handleCheckChange">{{langData.wTradeDate}}</el-checkbox>
+            <el-checkbox class="checkBox" v-model="showColumn.txnAmt" @change="handleCheckChange">{{langData.wTradeAmount}}</el-checkbox>
           </div>
           <div class="colorWrap">
             <div class="colorPicker">
-              <div class="colorFont">表頭文字顏色設定</div>
+              <div class="colorFont">{{langData.wTableTitleTextColor}}</div>
               <el-color-picker v-model="color" @active-change='handleChangeColor'></el-color-picker>
             </div>
             <div class="colorPicker">
-              <div class="colorFont">表格文字顏色設定</div>
+              <div class="colorFont">{{langData.wTableFieldTextColor}}</div>
               <el-color-picker v-model="color" @active-change='handleChangeColor'></el-color-picker>
             </div>
           </div>
@@ -246,7 +251,7 @@
 
     <!-- 背景設定跳窗 -->
     <el-dialog
-      title="背景設定"
+      :title="langData.wBackgroundSetting"
       :visible.sync="dialogVisible"
       width="60%"
       >
@@ -257,7 +262,7 @@
       </div> -->
       <div>
         <el-tabs tab-position="left" style="height: 200px;">
-          <el-tab-pane label="風景">
+          <el-tab-pane :label="langData.wScape">
             <div class="imgContainer" >
               <div class="imgWarp" v-for="img in backgroundImg" :key="img.id">
                 <img :src="img.img" alt="" @click="changeBackImg(img.imgUrl)">
@@ -822,8 +827,8 @@ export default {
             }
           }
           this.data = outsideArr
-
           this.data.forEach(item => {
+            item.txnAmt = Number(item.txnAmt)
             this.$set(item, "isShow", false)
           });
           this.data.forEach((item) => {
